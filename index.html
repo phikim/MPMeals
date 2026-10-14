@@ -10,15 +10,7 @@
 <meta name="apple-mobile-web-app-title" content="Meals">
 <meta name="application-name" content="Meals">
 <title>Meal Tracker</title>
-<style id="page-style">.step.big button{width:62px;height:58px;font-size:1.9rem}.step.big .q{min-width:64px;font-size:1.4rem;text-align:center;display:flex;align-items:center;justify-content:center;height:58px}
-.trk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}.trk-who{font-weight:700;font-size:1.15rem}
-.trk-note{padding:4px 0 2px}.trk-note input{width:100%;margin-bottom:8px}.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
-textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);border-radius:12px;padding:10px}
-.dtrk{display:block;margin-top:2px}.dt{display:block;font-size:.72em;line-height:1.25;color:#355}.dt.note{color:#7a5a00}.dt.req{color:#a33}
-.trk-note .chips{flex-wrap:wrap}.cal-cell .dt.note,.cal-cell .dt.req{display:none}.dmark{display:block;font-size:.7em;color:#7a5a00}
-.day-card .dtrk{padding:4px 14px 10px}.day-card .dt{font-size:.9rem}
-@media print{.cal-cell .dt.note,.cal-cell .dt.req{display:block}.dmark{display:none}.dt{font-size:7.5pt}.day-card .dt{font-size:9pt}}
-</style>
+<style id="page-style"></style>
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232f6f62'/%3E%3Ccircle cx='32' cy='34' r='16' fill='none' stroke='white' stroke-width='4'/%3E%3Cpath d='M14 14v14M10 14v8a4 4 0 0 0 8 0v-8M50 14c-4 2-5 8-5 12h5v20' fill='none' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
@@ -212,7 +204,7 @@ textarea{min-height:80px;resize:vertical}
 .dl .nm{flex:1}
 .dl .cg{font-size:.82rem;color:var(--muted);display:block}
 .notes{background:#faf8f3;border-radius:10px;padding:8px 12px;margin-top:8px}
-#toast{position:fixed;left:50%;bottom:calc(var(--tabh) + var(--safe-b) + 90px);transform:translateX(-50%) translateY(20px);background:#22302c;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:all .2s;z-index:120;max-width:90vw;text-align:center}
+#toast{pointer-events:none;position:fixed;left:50%;bottom:calc(var(--tabh) + var(--safe-b) + 90px);transform:translateX(-50%) translateY(20px);background:#22302c;color:#fff;padding:12px 18px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:all .2s;z-index:120;max-width:90vw;text-align:center}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .grid3{display:grid!important;grid-template-columns:repeat(3,1fr)}
 .grid3 button{min-width:0;font-size:.95rem;padding:6px 4px}
@@ -383,6 +375,32 @@ table.snap-table th:first-child,table.snap-table td:first-child,table.snap-table
   body.print-daylist .day-card{break-inside:avoid;padding:6px 0;border:0;border-bottom:1px solid #bbb;border-radius:0;font-size:10pt}
   .weeklist .day-card{break-inside:avoid}
 }
+.step.big button{width:62px;height:58px;font-size:1.9rem}.step.big .q{min-width:64px;font-size:1.4rem;text-align:center;display:flex;align-items:center;justify-content:center;height:58px}
+.trk-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}.trk-who{font-weight:700;font-size:1.15rem}
+.trk-note{padding:4px 0 2px}.trk-note input{width:100%;margin-bottom:8px}.chip.on{background:var(--pri);border-color:var(--pri);color:#fff}
+textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);border-radius:12px;padding:10px}
+.dtrk{display:block;margin-top:2px}.dt{display:block;font-size:.72em;line-height:1.25;color:#355}.dt.note{color:#7a5a00}.dt.req{color:#a33}
+.trk-note .chips{flex-wrap:wrap}.cal-cell .dt.note,.cal-cell .dt.req{display:none}.dmark{display:block;font-size:.7em;color:#7a5a00}
+.day-card .dtrk{padding:4px 14px 10px}.day-card .dt{font-size:.9rem}
+@media print{.cal-cell .dt.note,.cal-cell .dt.req{display:block}.dmark{display:none}.dt{font-size:7.5pt}.day-card .dt{font-size:9pt}}
+.lowbtn.on.low{background:#f59e0b;border-color:#f59e0b;color:#3a2500}.lowbtn.on.out{background:#c62828;border-color:#c62828;color:#fff}
+.lowpill{background:#d97706}.lowpill.has-out{background:#c62828}.lp-two{display:flex;flex-direction:column;line-height:1.05;text-align:left}.lp-two small{font-size:.72rem;font-weight:700;opacity:.95}
+@media (max-width:420px){.lowpill .lp-t{display:inline}}
+.lvl{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.75rem;font-weight:800;vertical-align:middle}.lvl.low{background:#fde68a;color:#7a4a00}.lvl.out{background:#c62828;color:#fff}
+.lvl-h.out{color:#c62828}.lvl-h.low{color:#a35a00}
+.btn.out{background:#c62828;border-color:#c62828;color:#fff;min-height:56px;font-size:1.1rem}.btn.low{background:#f59e0b;border-color:#f59e0b;color:#2b1a00;min-height:56px;font-size:1.1rem}
+.chips.wrap{flex-wrap:wrap;overflow:visible}
+.sheet{max-height:92vh;overflow-y:auto;overflow-x:hidden}
+.rs-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:6px 0}.rs-grid label,.rs-cost{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.9rem}.rs-grid input,.rs-cost input{box-sizing:border-box;min-width:0;font-size:1.15rem;padding:10px;border:1.5px solid var(--line);border-radius:12px;width:100%}
+.inv-row{display:flex;align-items:center;gap:10px;padding:12px 0 12px 16px;border-bottom:1px solid var(--line)}.inv-row:last-child{border-bottom:0}
+.inv-est{font-weight:700;color:#2d5a4b;margin:2px 0}.inv-est.urgent{color:#c62828}.inv-est small{font-weight:500;color:var(--muted)}
+.hh-tag{display:inline-block;font-size:.72rem;font-weight:700;color:#7a5a00;background:#fbf3dc;border-radius:999px;padding:2px 8px;margin-left:6px}
+.tag.hh{background:#fbf3dc;color:#7a5a00}
+.ci.hh i,.ml.hh i{background:#b08900}
+.tabs button[hidden]{display:none}
+@media (max-width:440px){.appbar-in{gap:6px}.appbar h1{min-width:0;font-size:1.12rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.syncpill{max-width:84px;overflow:hidden;text-overflow:ellipsis;padding:6px 9px;flex-shrink:1;min-width:0}.userbtn{max-width:96px;overflow:hidden;flex-shrink:1;min-width:0}.lowpill{padding:5px 9px 5px 7px;gap:4px;flex-shrink:0}}
+
+.cat-hh{display:flex;align-items:center;gap:10px;padding:8px 16px;border-top:1px solid var(--line)}
 </style>
 </head>
 <body>
@@ -406,7 +424,7 @@ table.snap-table th:first-child,table.snap-table td:first-child,table.snap-table
 'use strict';
 var KEY='mealTracker.v1', DRAFT_KEY='mealTracker.draft.v1';
 var MEALS=['Breakfast','Lunch','Dinner','Snack','Other'];
-var APP_VERSION='1.4.0';
+var APP_VERSION='1.5.0';
 var ALL='Both';
 var SRC={home:'Home',dining:'Dining Room'};
 var CHECK='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -448,20 +466,26 @@ function parseNum(s){if(s==null)return null;s=String(s).replace(/[^0-9.,-]/g,'')
 
 /* ---------- data ---------- */
 function starterCategories(){return STARTER.map(function(c){return {id:uid(),name:c[0],items:c[1].map(function(n){return {id:uid(),name:n,cost:{home:null,dining:null}};})};});}
-function freshDB(){return {version:1,settings:{showCosts:false,people:['Mom','Dad'],currency:'$',weekStart:0,itemSort:'frequent',trackers:defaultTrackers()},categories:starterCategories(),meals:[],profiles:[],flags:[],days:[]};}
+function freshDB(){return {version:1,settings:{showCosts:false,people:['Mom','Dad'],currency:'$',weekStart:0,itemSort:'frequent',trackers:defaultTrackers(),showDaily:false,autoLow:true,autoLowDays:3},categories:starterCategories(),meals:[],profiles:[],flags:[],days:[],restocks:[]};}
 function normalize(d){
   var f=freshDB(); d=(d&&typeof d==='object')?d:{};
   d.settings=Object.assign({},f.settings,d.settings||{});
   if(!Array.isArray(d.settings.people))d.settings.people=f.settings.people.slice();
   if(!Array.isArray(d.categories))d.categories=f.categories;
   d.categories.forEach(function(c){c.id=c.id||uid();c.name=String(c.name||'Category');c.items=Array.isArray(c.items)?c.items:[];
-    c.items.forEach(function(i){i.id=i.id||uid();i.name=String(i.name||'Item');i.cost=Object.assign({home:null,dining:null},i.cost||{});});});
+    if(typeof c.household!=='boolean')c.household=hhName(c.name);
+    c.items.forEach(function(i){i.id=i.id||uid();i.name=String(i.name||'Item');i.cost=Object.assign({home:null,dining:null},i.cost||{});i.packSize=isNum(+i.packSize)&&i.packSize!==null&&i.packSize!==''&&+i.packSize>0?+i.packSize:null;i.unit=String(i.unit||'');});});
   if(!Array.isArray(d.profiles))d.profiles=[];
   d.profiles=d.profiles.filter(function(p){return p&&p.id&&p.salt&&p.pinHash;});
   d.profiles.forEach(function(p){p.name=String(p.name||'User');p.role=p.role==='admin'?'admin':'member';});
   if(!Array.isArray(d.meals))d.meals=[];
   if(!Array.isArray(d.flags))d.flags=[];
   d.flags=d.flags.filter(function(f){return f&&f.id&&f.itemId;});
+  d.flags.forEach(function(f){f.level=f.level==='out'?'out':'low';f.auto=!!f.auto;});
+  if(!Array.isArray(d.restocks))d.restocks=[];
+  d.restocks=d.restocks.filter(function(r){return r&&r.id&&r.itemId;});
+  d.restocks.forEach(function(r){r.qty=numOrNull(r.qty);r.cost=numOrNull(r.cost);r.unit=String(r.unit||'');r.autoFlagged=!!r.autoFlagged;r.at=isNum(+r.at)&&r.at!=null?+r.at:parseYmd(r.date||today()).getTime();r.date=r.date||ymd(new Date(r.at));});
+  d.settings.showDaily=!!d.settings.showDaily;d.settings.autoLow=d.settings.autoLow!==false;d.settings.autoLowDays=isNum(+d.settings.autoLowDays)?Math.max(0,Math.round(+d.settings.autoLowDays)):3;
   d.settings.trackers=normTrackers(d.settings.trackers)||defaultTrackers();
   if(!Array.isArray(d.days))d.days=[];
   d.days=d.days.filter(function(x){return x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||x.id||''));}).map(function(x){var k=String(x.date||x.id);return {id:k,date:k,counts:objNum(x.counts),notes:objStr(x.notes),requests:String(x.requests||''),note:String(x.note||''),by:x.by||null,byName:x.byName||null,at:isNum(x.at)?x.at:null};});
@@ -469,7 +493,7 @@ function normalize(d){
   d.meals.forEach(function(m){m.id=m.id||uid();m.items=Array.isArray(m.items)?m.items:[];m.person=m.person||ALL;
     m.items.forEach(function(e){e.qty=isNum(+e.qty)?+e.qty:1;e.source=e.source==='dining'?'dining':'home';if(!isNum(e.unitCost))e.unitCost=null;});});
   d.version=1; return d;}
-function load(){try{var raw=localStorage.getItem(KEY);if(raw)return normalize(JSON.parse(raw));}catch(e){console.warn('load failed',e);}return freshDB();}
+function load(){try{var raw=localStorage.getItem(KEY);if(raw)return normalize(JSON.parse(raw));}catch(e){console.warn('load failed',e);}return normalize(freshDB());}
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){toast('Could not save on this device (storage unavailable)');}}
 function save(){saveLocal();if(typeof scheduleSync==='function')scheduleSync();}
 function newDraft(keep){keep=keep||{};return {editingId:null,date:keep.date||today(),meal:defaultMeal(),person:keep.person||ALL,defaultSource:keep.defaultSource||'home',notes:'',items:{}};}
@@ -491,7 +515,7 @@ function mealTotal(m){var t=0,priced=false;m.items.forEach(function(e){var u=lin
 
 var db=load(); reindex();
 var draft=loadDraft();
-var ui={tab:'log',dday:null,search:'',open:{},rview:'summary',cal:{view:'month',anchor:today(),sel:null},snapSort:'most',shopQ:'',histDays:21,setOpen:{},sum:{preset:'thisweek',from:null,to:null,person:'all',logger:'all',split:false}};
+var ui={tab:'log',shopView:'list',dday:null,search:'',open:{},rview:'summary',cal:{view:'month',anchor:today(),sel:null},snapSort:'most',shopQ:'',histDays:21,setOpen:{},sum:{preset:'thisweek',from:null,to:null,person:'all',logger:'all',split:false}};
 var restoredDraft=!draft.editingId&&Object.keys(draft.items).length>0;
 
 /* ---------- toast & modal ---------- */
@@ -515,7 +539,7 @@ function modal(o){
     if(el){setTimeout(function(){el.focus();try{el.select();}catch(e){}},60);
       el.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();closeModal(modalEnter);}});}
   });}
-function closeModal(v){var el=$('#modal-input');var val=el?el.value:undefined;var root=$('#modal-root');root.classList.remove('open');root.innerHTML='';var r=modalResolve;modalResolve=null;if(r)r({button:v,value:val});}
+function closeModal(v){var el=$('#modal-input');var val=el?el.value:undefined;var root=$('#modal-root'),fields={};root.querySelectorAll('[data-f]').forEach(function(x){fields[x.dataset.f]=x.value;});root.classList.remove('open');root.innerHTML='';var r=modalResolve;modalResolve=null;if(r)r({button:v,value:val,fields:fields});}
 function confirmBox(title,message,okLabel,danger){return modal({title:title,message:message,buttons:[{label:okLabel||'OK',value:'ok',style:danger?'danger solid':'primary'},{label:'Cancel',value:'cancel',style:'ghost'}]}).then(function(r){return r.button==='ok';});}
 function askText(title,value,placeholder,message){return modal({title:title,message:message,input:{value:value,placeholder:placeholder},buttons:[{label:'Save',value:'ok',style:'primary'},{label:'Cancel',value:'cancel',style:'ghost'}]}).then(function(r){return r.button==='ok'?String(r.value||'').trim():null;});}
 function askNumber(title,value,message,allowBlank){return modal({title:title,message:message,input:{value:value==null?'':value,type:'text',inputmode:'decimal',placeholder:allowBlank?'Leave blank for none':''},buttons:[{label:'Save',value:'ok',style:'primary'},{label:'Cancel',value:'cancel',style:'ghost'}]}).then(function(r){if(r.button!=='ok')return undefined;var n=parseNum(r.value);if(n==null&&!allowBlank)return undefined;return n;});}
@@ -674,54 +698,35 @@ setInterval(checkAutoLock,20000);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')checkAutoLock();});
 
 /* ---------- v1.4: item order by use, Frequent, running-low flags, calendar, items list ---------- */
-function freqScores(){var s={},t=parseYmd(today()).getTime();
+/* recency-weighted use (last 90 days, half-life 30 days). With a meal type, items logged for that
+   meal rank first; the rest of the list is filled from overall use (so a meal type with little
+   history still gets a full Frequent section). */
+var FREQ_MIN_MEALS=5;
+function freqScores(meal){var all={},per={},n=0,t=parseYmd(today()).getTime();
   db.meals.forEach(function(m){var age=(t-parseYmd(m.date).getTime())/864e5;if(age<0)age=0;if(age>90)return;
-    var w=Math.pow(0.5,age/30),seen={};
-    m.items.forEach(function(e){if(!e.itemId||seen[e.itemId])return;seen[e.itemId]=1;s[e.itemId]=(s[e.itemId]||0)+w;});});
-  return s;}
+    var w=Math.pow(0.5,age/30),seen={},mine=meal&&m.meal===meal;if(mine)n++;
+    m.items.forEach(function(e){if(!e.itemId||seen[e.itemId])return;seen[e.itemId]=1;all[e.itemId]=(all[e.itemId]||0)+w;if(mine)per[e.itemId]=(per[e.itemId]||0)+w;});});
+  if(!meal)return all;
+  var k=n>=FREQ_MIN_MEALS?0.05:(FREQ_MIN_MEALS-n)/FREQ_MIN_MEALS,s={};
+  Object.keys(all).forEach(function(id){s[id]=per[id]?1000+per[id]+0.05*all[id]:(k||0.05)*all[id];});
+  freqScores.lastN=n;return s;}
+function logFreq(){return freqScores(draft.meal);}
 function byName(a,b){return a.name.localeCompare(b.name,undefined,{sensitivity:'base'});}
 function sortedItems(c,sc){var mode=db.settings.itemSort||'frequent',a=c.items.slice();
   if(mode==='az')a.sort(byName);
-  else if(mode==='frequent'){sc=sc||freqScores();a.sort(function(x,y){return (sc[y.id]||0)-(sc[x.id]||0)||byName(x,y);});}
+  else if(mode==='frequent'){sc=sc||logFreq();a.sort(function(x,y){return (sc[y.id]||0)-(sc[x.id]||0)||byName(x,y);});}
   return a;}
-function frequentItems(n,sc){sc=sc||freqScores();var all=[];
+function frequentItems(n,sc){sc=sc||logFreq();var all=[];
   db.categories.forEach(function(c){c.items.forEach(function(i){if(sc[i.id]>0)all.push(i);});});
   all.sort(function(x,y){return (sc[y.id]||0)-(sc[x.id]||0)||byName(x,y);});return all.slice(0,n||10);}
 function renderFrequent(){if(ui.search.trim())return '';var top=frequentItems(10);if(!top.length)return '';
-  return '<section class="card freq"><h3 class="freq-h">⭐ Frequent <span class="muted">tap to check</span></h3><div class="freq-grid">'+top.map(function(i){var l=draft.items[i.id];
+  return '<section class="card freq"><h3 class="freq-h" id="freq-h">⭐ Frequent for '+esc(draft.meal==='Other'?'Other / household':draft.meal)+' <span class="muted">tap to check</span></h3><div class="freq-grid">'+top.map(function(i){var l=draft.items[i.id];
     return '<button class="freq-tile'+(l?' on':'')+'" data-action="toggle-item" data-id="'+i.id+'" aria-pressed="'+!!l+'"><span class="check">'+(l?CHECK:'')+'</span><span class="fn">'+esc(i.name)+'</span>'+(l?'<b class="fq">'+qtyNice(l.qty)+'</b>':'')+'</button>';}).join('')+'</div></section>';}
 
 /* running low */
 var CART='<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 4h2.5l2.2 10.5h10.6L20.5 7H7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9.5" cy="19" r="1.6" fill="currentColor"/><circle cx="17" cy="19" r="1.6" fill="currentColor"/></svg>';
 function flagFor(itemId){for(var i=0;i<db.flags.length;i++)if(db.flags[i].itemId===itemId)return db.flags[i];return null;}
-function lowBtn(itemId){var f=flagFor(itemId);
-  return '<button class="lowbtn'+(f?' on':'')+'" data-action="toggle-low" data-id="'+esc(itemId)+'" aria-pressed="'+!!f+'" aria-label="'+(f?'On the shopping list. Tap to remove':'Mark as running low')+'">'+CART+'<span>'+(f?'Low ✓':'Low?')+'</span></button>';}
-function setLow(itemId,on){var x=findItem(itemId),u=currentUser();
-  if(on){if(flagFor(itemId))return;db.flags.push({id:uid(),itemId:itemId,name:x?x.item.name:'',category:x?x.cat.name:'',note:'',by:u?u.id:null,byName:u?u.name:null,at:Date.now()});}
-  else db.flags=db.flags.filter(function(f){return f.itemId!==itemId;});
-  save();renderLowPill();}
-function renderLowPill(){var b=$('#lowpill'),n=db.flags.length;if(!b)return;
-  if(!n||lockNeeded()){b.hidden=true;return;}
-  b.hidden=false;b.innerHTML='<i class="blink" aria-hidden="true"></i>'+CART+'<b>'+n+'</b><span class="lp-t"> low</span>';
-  b.setAttribute('aria-label',n+' item'+(n===1?'':'s')+' running low. Open the shopping list');}
 function flagWhen(f){return f.at?new Date(f.at).toLocaleString(undefined,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';}
-function shopText(){var d=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
-  return 'Shopping list ('+d+'):\n'+sortedFlags().map(function(f){return '☐ '+f.name+(f.category?' ('+f.category+')':'')+(f.note?' — '+f.note:'');}).join('\n');}
-function sortedFlags(){var order={};db.categories.forEach(function(c,i){order[c.name]=i;});
-  return db.flags.slice().sort(function(a,b){return ((order[a.category]==null?99:order[a.category])-(order[b.category]==null?99:order[b.category]))||a.name.localeCompare(b.name);});}
-function renderShop(){var fl=sortedFlags(),h='';
-  h+='<div class="print-only print-head"><h1>Shopping list</h1><p>'+esc(new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'}))+'</p></div>';
-  if(!fl.length)h+='<div class="empty no-print" id="shop-empty"><h2>Nothing is running low</h2><p>Tap <b>Low?</b> next to any item (here or on the Log screen) when you notice it is running low.</p></div>';
-  else{
-    h+='<section class="card" id="shop-list">'+fl.map(function(f){
-      return '<div class="shop-row" data-id="'+f.id+'" data-item="'+esc(f.itemId)+'"><span class="box print-only">☐</span><div class="grow"><div class="sh-name">'+esc(f.name)+'</div><div class="sh-meta">'+esc(f.category||'')+(f.byName?' · flagged by <b>'+esc(f.byName)+'</b>':'')+(f.at?' · '+esc(flagWhen(f)):'')+'</div>'+
-        (f.note?'<div class="sh-note">“'+esc(f.note)+'”</div>':'')+'<button class="link no-print" data-action="flag-note" data-id="'+f.id+'">'+(f.note?'Edit note':'+ Add note')+'</button></div>'+
-        '<button class="btn primary gotit no-print" data-action="restock" data-id="'+f.id+'">Got it ✓</button></div>';}).join('')+'</section>';
-    h+='<div class="btn-row no-print"><button class="btn" data-action="shop-print">Print / Save as PDF</button><button class="btn" data-action="shop-copy">Copy shopping list</button></div>';
-    h+='<p class="hint no-print">Tap <b>Got it ✓</b> when the item has been bought. Items stay on the list until someone does.</p>';}
-  h+='<h2 class="sec-title no-print">Mark something as running low</h2><div class="search no-print"><input type="text" id="shop-search" placeholder="Find an item…" value="'+esc(ui.shopQ||'')+'" autocomplete="off" aria-label="Find an item"></div>';
-  h+='<div id="shop-pick" class="no-print">'+renderShopPick()+'</div>';
-  return h;}
 function renderShopPick(){var q=(ui.shopQ||'').trim().toLowerCase(),rows=[];
   if(q){db.categories.forEach(function(c){c.items.forEach(function(i){if(i.name.toLowerCase().indexOf(q)>=0)rows.push({i:i,c:c});});});}
   else frequentItems(10).forEach(function(i){var x=findItem(i.id);if(x)rows.push({i:i,c:x.cat});});
@@ -749,15 +754,15 @@ function dayMap(from,to,person){var D={};
   mealsIn(from,to,person,'all').sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:mealSort(a,b);}).forEach(function(m){
     var d=D[m.date]=D[m.date]||{date:m.date,meals:[],items:{},order:[],qty:0,cost:0,priced:false};
     d.meals.push(m);
-    m.items.forEach(function(e){var k=lineKey(e),it=d.items[k];if(!it){it=d.items[k]={name:lineName(e),cat:catOfLine(e),qty:0,home:0,dining:0};d.order.push(k);}
+    m.items.forEach(function(e){var k=lineKey(e),it=d.items[k];if(!it){it=d.items[k]={name:lineName(e),cat:catOfLine(e),hh:isHHLine(e),qty:0,home:0,dining:0};d.order.push(k);}
       it.qty+=e.qty;it[e.source]+=e.qty;d.qty+=e.qty;var u=lineUnit(e);if(u!=null){d.cost+=u*e.qty;d.priced=true;}});});
   return D;}
-function srcCls(it){return it.home&&it.dining?'hd':it.dining?'d':'h';}
+function srcCls(it){return it.hh?'hh':it.home&&it.dining?'hd':it.dining?'d':'h';}
 function calItems(d,limit){var keys=d.order.slice().sort(function(a,b){return d.items[b].qty-d.items[a].qty||d.items[a].name.localeCompare(d.items[b].name);});
   var h='';keys.forEach(function(k,i){var it=d.items[k];h+='<span class="ci '+srcCls(it)+(limit&&i>=limit?' x':'')+'"><i></i>'+esc(it.name)+' <b>'+fmtQty(round2(it.qty))+'</b></span>';});
   if(limit&&keys.length>limit)h+='<span class="more">+'+(keys.length-limit)+' more</span>';
   return h;}
-function mealLines(m){return m.items.map(function(e){return '<span class="ml '+(e.source==='dining'?'d':'h')+'"><i></i>'+esc(lineName(e))+' <b>'+fmtQty(e.qty)+'</b></span>';}).join('');}
+function mealLines(m){return m.items.map(function(e){return '<span class="ml '+(isHHLine(e)?'hh':e.source==='dining'?'d':'h')+'"><i></i>'+esc(lineName(e))+' <b>'+fmtQty(e.qty)+'</b></span>';}).join('');}
 function addMonths(s,n){var d=parseYmd(s);return ymd(new Date(d.getFullYear(),d.getMonth()+n,1));}
 function renderCalendar(){var C=ui.cal,S=ui.sum,costs=db.settings.showCosts,a=parseYmd(C.anchor),h='';
   var from,to,label;
@@ -770,7 +775,7 @@ function renderCalendar(){var C=ui.cal,S=ui.sum,costs=db.settings.showCosts,a=pa
   if(isAdmin())h+='<div style="display:flex;align-items:center;gap:12px;margin:12px 0"><div style="flex:1" class="set-title">Show costs</div><button class="switch'+(costs?' on':'')+'" role="switch" aria-checked="'+costs+'" aria-label="Show costs" data-action="toggle-costs" id="costs-switch-r"><span></span></button></div>';
   if(db.settings.people.length)h+='<div class="lbl">Who ate</div>'+seg('sum-person',[{v:'all',l:'All'}].concat(db.settings.people.map(function(p){return {v:p,l:p};})),S.person);
   h+='<div class="btn-row" style="margin-top:12px"><button class="btn" data-action="cal-print">Print calendar</button><button class="btn" data-action="cal-print-list">Print list by day</button></div>';
-  h+='<p class="hint"><span class="ci h"><i></i>Home</span> <span class="ci d"><i></i>Dining Room</span> <span class="ci hd"><i></i>both</span>'+(C.view==='month'?' · Tap a day to see everything.':'')+'</p></section>';
+  h+='<p class="hint"><span class="ci h"><i></i>Home</span> <span class="ci d"><i></i>Dining Room</span> <span class="ci hd"><i></i>both</span> <span class="ci hh"><i></i>Household</span>'+(C.view==='month'?' · Tap a day to see everything.':'')+'</p></section>';
   var who=S.person==='all'?'Everyone':S.person+' (incl. shared)';
   h+='<div class="print-only print-head"><h1>Meals: '+esc(label)+'</h1><p>'+esc(who)+' · Printed '+esc(new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}))+'</p></div>';
   var tq=0,tc=0,nd=0;Object.keys(D).forEach(function(k){tq+=D[k].qty;tc+=D[k].cost;nd++;});
@@ -801,7 +806,7 @@ function dayCard(k,d,costs,isToday){
   var h='<section class="card day-card'+(isToday?' today':'')+'" data-date="'+k+'"><div class="dc-head"><b>'+esc(prettyDate(k,true))+'</b>'+(d&&costs&&d.priced?'<span class="dc-cost">'+money(d.cost)+'</span>':'')+'</div>';
   var tr=dayTrkHTML(dayRec(k),true);
   if(!d)return h+(tr||'<p class="muted dc-empty">Nothing logged</p>')+'</section>';
-  d.meals.forEach(function(m){h+='<div class="dc-meal"><span class="dc-mt">'+esc(m.meal)+(m.person!==ALL||db.settings.people.length>1?' <small>'+esc(personLabel(m.person))+'</small>':'')+'</span><span class="dc-items">'+mealLines(m)+'</span></div>';});
+  d.meals.forEach(function(m){h+='<div class="dc-meal"><span class="dc-mt">'+esc(mealLabel(m))+(m.person!==ALL||db.settings.people.length>1?' <small>'+esc(personLabel(m.person))+'</small>':'')+'</span><span class="dc-items">'+mealLines(m)+'</span></div>';});
   return h+tr+'</section>';}
 
 /* ---------- daily trackers (briefs, pads, inventory notes, requests) ---------- */
@@ -892,6 +897,151 @@ function normTrackers(v){if(!Array.isArray(v))return null;return v.filter(functi
 function objNum(o){var r={};if(o&&typeof o==='object')Object.keys(o).forEach(function(k){var n=+o[k];if(o[k]!=null&&o[k]!==''&&isNum(n))r[k]=n;});return r;}
 function objStr(o){var r={};if(o&&typeof o==='object')Object.keys(o).forEach(function(k){if(o[k])r[k]=String(o[k]);});return r;}
 
+/* ===== v1.5.0: household items, stock levels, restocks, run-out estimates ===== */
+var HH_MEAL='Household', MEAL_ORDER=MEALS.concat([HH_MEAL]);
+var HH_ICON='🧻';
+function hhName(n){return /household/i.test(String(n||''));}
+function catByName(n){for(var i=0;i<db.categories.length;i++)if(db.categories[i].name===n)return db.categories[i];return null;}
+function isHHItem(id){var x=id&&findItem(id);return !!(x&&x.cat.household);}
+function isHHLine(e){var x=e.itemId&&findItem(e.itemId);if(x)return !!x.cat.household;var c=catByName(e.category);return c?!!c.household:hhName(e.category);}
+function foodLines(m){return m.items.filter(function(e){return !isHHLine(e);});}
+function hhLines(m){return m.items.filter(isHHLine);}
+function mealLabel(m){return m.meal===HH_MEAL?HH_ICON+' Household':m.meal;}
+function nItems(n){return n+' item'+(n===1?'':'s');}
+
+/* stock levels */
+var LEVEL={low:'Low',out:'Out'};
+function flagLevel(f){return f&&f.level==='out'?'out':'low';}
+function lowBtn(itemId){var f=flagFor(itemId),lv=f?flagLevel(f):'';
+  return '<button class="lowbtn'+(f?' on '+lv:'')+'" data-action="stock-sheet" data-id="'+esc(itemId)+'" aria-label="'+(f?'Marked '+LEVEL[lv]+'. Tap to change':'Running low or out? Tap to mark')+'">'+CART+'<span>'+(f?LEVEL[lv]:'Low?')+'</span></button>';}
+function setLevel(itemId,level,note,auto){var x=findItem(itemId),u=currentUser(),f=flagFor(itemId);
+  if(!level){db.flags=db.flags.filter(function(g){return g.itemId!==itemId;});}
+  else if(f){f.level=level;if(note!=null)f.note=note;f.auto=!!auto&&f.auto;f.by=u?u.id:f.by;f.byName=u?u.name:f.byName;f.at=Date.now();}
+  else db.flags.push({id:uid(),itemId:itemId,name:x?x.item.name:'',category:x?x.cat.name:'',note:note||'',level:level,auto:!!auto,by:u?u.id:null,byName:u?u.name:null,at:Date.now()});
+  save();renderLowPill();}
+function setLow(itemId,on){setLevel(itemId,on?'low':null);}
+function flagCounts(){var o=0,l=0;db.flags.forEach(function(f){if(flagLevel(f)==='out')o++;else l++;});return {out:o,low:l,n:o+l};}
+function renderLowPill(){var b=$('#lowpill'),c=flagCounts();if(!b)return;
+  if(!c.n||lockNeeded()){b.hidden=true;return;}
+  var parts=[];if(c.out)parts.push(c.out+' out');if(c.low)parts.push(c.low+' low');
+  b.hidden=false;b.classList.toggle('has-out',!!c.out);
+  b.innerHTML='<i class="blink" aria-hidden="true"></i>'+CART+'<span class="lp-two"><b>'+c.n+' to buy</b><small>'+parts.join(' · ')+'</small></span>';
+  b.setAttribute('aria-label',c.n+' item'+(c.n===1?'':'s')+' to buy: '+parts.join(', ')+'. Open the shopping list');}
+var STOCK_CHIPS=['Plenty','Half left','Last package opened','Out'];
+function stockSheet(itemId){var x=findItem(itemId);if(!x)return;var f=flagFor(itemId);
+  var html='<div class="chips wrap">'+STOCK_CHIPS.map(function(c){return '<button class="chip" data-action="sheet-chip" data-v="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><p class="hint" style="margin:4px 0 0">Optional note (how much is left?)</p>';
+  var btns=[{label:'Out — none left',value:'out',style:'out'},{label:'Low — running low',value:'low',style:'low'}];
+  if(f)btns.push({label:'Not low any more (remove)',value:'clear'});
+  btns.push({label:'Cancel',value:'cancel',style:'ghost'});
+  modal({title:x.item.name,message:f?'Now marked '+LEVEL[flagLevel(f)]+'.':'Is it running low or out?',html:html,input:{value:f?f.note:'',placeholder:'e.g. half a box left'},buttons:btns}).then(function(r){
+    if(r.button==='out'||r.button==='low'){setLevel(itemId,r.button,String(r.value||'').trim());toast(x.item.name+': '+LEVEL[r.button]+' — on the shopping list');}
+    else if(r.button==='clear'){setLevel(itemId,null);toast('Removed from the shopping list');}
+    else return;
+    if(ui.tab==='log')refreshLogParts();else render();});}
+function sortedFlags(){var order={};db.categories.forEach(function(c,i){order[c.name]=i;});
+  return db.flags.slice().sort(function(a,b){return ((flagLevel(a)==='out'?0:1)-(flagLevel(b)==='out'?0:1))||((order[a.category]==null?99:order[a.category])-(order[b.category]==null?99:order[b.category]))||a.name.localeCompare(b.name);});}
+function shopText(){var d=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'}),fl=sortedFlags(),t='Shopping list ('+d+'):';
+  ['out','low'].forEach(function(lv){var g=fl.filter(function(f){return flagLevel(f)===lv;});if(!g.length)return;
+    t+='\n'+(lv==='out'?'OUT (needed now):':'Running low:')+'\n'+g.map(function(f){return '☐ '+f.name+(f.category?' ('+f.category+')':'')+(f.note?' — '+f.note:'');}).join('\n');});
+  return t;}
+
+/* restocks + estimates */
+function lastRestock(itemId){var r=null;db.restocks.forEach(function(x){if(x.itemId===itemId&&(!r||x.at>r.at))r=x;});return r;}
+function unitIsSingle(u){return !u||/^(units?|each|ea|pcs?|pieces?|servings?|items?|singles?)$/i.test(String(u).trim());}
+function mealMs(m){return parseYmd(m.date).getTime();}
+function usedSince(itemId,r){var rd=ymd(new Date(r.at)),q=0;
+  db.meals.forEach(function(m){if(m.date<rd)return;if(m.date===rd&&(m.createdAt||0)<r.at)return;
+    m.items.forEach(function(e){if(e.itemId===itemId)q+=e.qty;});});return q;}
+function avgUse(itemId){var first=null,t=today();
+  db.meals.forEach(function(m){if(m.items.some(function(e){return e.itemId===itemId;})&&(!first||m.date<first))first=m.date;});
+  if(!first)return {avg:0,days:0};
+  var since=Math.round((parseYmd(t)-parseYmd(first))/864e5)+1,span=Math.min(28,Math.max(7,since)),from=addDays(t,-(span-1)),q=0;
+  db.meals.forEach(function(m){if(m.date<from||m.date>t)return;m.items.forEach(function(e){if(e.itemId===itemId)q+=e.qty;});});
+  return {avg:q/span,days:span};}
+function estimate(itemId){var x=findItem(itemId),r=lastRestock(itemId);if(!x||!r||!isNum(r.qty)||r.qty<=0)return null;
+  var per=unitIsSingle(r.unit)?1:(isNum(x.item.packSize)&&x.item.packSize>0?x.item.packSize:null);
+  var a=avgUse(itemId),E={r:r,avg:a.avg,span:a.days,needPack:per==null};
+  if(per==null)return E;
+  E.stock=r.qty*per;E.used=usedSince(itemId,r);E.left=Math.max(0,E.stock-E.used);
+  if(a.avg>0){E.days=E.left/a.avg;E.date=addDays(today(),Math.floor(E.days));}
+  return E;}
+function estText(E){if(!E)return '';if(E.needPack)return 'Add pack size to estimate';
+  if(E.days==null)return 'About '+fmtQty(round2(E.left))+' left · not enough use logged to estimate';
+  var d=Math.floor(E.days);return (d<1?'About to run out':'About '+d+' day'+(d===1?'':'s')+' left')+' · runs out around '+shortDate(E.date);}
+function autoFlag(){var s=db.settings;if(!s.autoLow)return 0;var n=0;
+  db.categories.forEach(function(c){c.items.forEach(function(i){var E=estimate(i.id);
+    if(!E||E.days==null||E.days>s.autoLowDays||flagFor(i.id)||E.r.autoFlagged)return;
+    E.r.autoFlagged=true;
+    db.flags.push({id:'auto-'+E.r.id,itemId:i.id,name:i.name,category:c.name,note:'About '+Math.max(0,Math.floor(E.days))+' days left (estimate)',level:'low',auto:true,by:null,byName:'Auto (estimate)',at:Date.now()});n++;});});
+  if(n){save();renderLowPill();}return n;}
+var UNIT_CHIPS=['units','packs','boxes','rolls','bottles','bags'];
+function restockSheet(flagId){var f=db.flags.filter(function(x){return x.id===flagId;})[0];if(!f)return;
+  var x=findItem(f.itemId),it=x&&x.item,unit=(it&&it.unit)||'';
+  var html='<div class="rs-grid"><label><span>How many did you get? <small>(optional)</small></span><input data-f="qty" id="rs-qty" type="text" inputmode="decimal" placeholder="e.g. 2"></label>'+
+    '<label><span>Unit</span><input data-f="unit" id="rs-unit" type="text" value="'+esc(unit)+'" placeholder="packs, boxes, rolls…" autocomplete="off"></label></div>'+
+    '<div class="chips wrap">'+UNIT_CHIPS.map(function(u){return '<button class="chip" data-action="unit-chip" data-v="'+u+'">'+u+'</button>';}).join('')+'</div>'+
+    (db.settings.showCosts?'<label class="rs-cost"><span>Cost <small>(optional)</small></span><input data-f="cost" id="rs-cost" type="text" inputmode="decimal" placeholder="'+esc(db.settings.currency)+'"></label>':'');
+  modal({title:'Got '+f.name,message:'Add how many you bought to track stock (optional).',html:html,buttons:[{label:'Restocked',value:'restock',style:'primary'},{label:'Just clear from the list',value:'clear'},{label:'Cancel',value:'cancel',style:'ghost'}]}).then(function(r){
+    if(r.button==='cancel'||!r.button)return;
+    db.flags=db.flags.filter(function(g){return g.itemId!==f.itemId;});
+    if(r.button==='restock'&&x){var F=r.fields||{},q=parseNum(F.qty),u=String(F.unit||'').trim(),c=parseNum(F.cost),me=currentUser();
+      if(u)it.unit=u;
+      db.restocks.push({id:uid(),itemId:f.itemId,name:it.name,date:today(),at:Date.now(),qty:q,unit:u,cost:c,by:me?me.id:null,byName:me?me.name:null,autoFlagged:false});
+      save();render();toast(it.name+' restocked'+(q!=null?' · '+fmtQty(q)+(u?' '+u:''):'')+' ✓');}
+    else{save();render();toast(f.name+' cleared from the list');}});}
+function invItems(){var out=[];db.categories.forEach(function(c){c.items.forEach(function(i){var r=lastRestock(i.id);if(r)out.push({i:i,c:c,r:r,E:estimate(i.id)});});});
+  out.sort(function(a,b){var x=a.E&&a.E.days!=null?a.E.days:1e9,y=b.E&&b.E.days!=null?b.E.days:1e9;return x-y||a.i.name.localeCompare(b.i.name);});return out;}
+function renderInventory(){var L=invItems(),h='';
+  h+='<div class="print-only print-head"><h1>Inventory</h1><p>'+esc(new Date().toLocaleDateString())+'</p></div>';
+  if(!L.length)return h+'<div class="empty" id="inv-empty"><h2>Nothing tracked yet</h2><p>When you tap <b>Got it</b> on the shopping list and enter how many you bought, the item shows up here with an estimate of when it will run out.</p></div>';
+  h+='<p class="hint" style="margin:0 4px 10px">Estimates are approximate: what you bought, minus what has been logged since, at the recent daily rate.</p><section class="card" id="inv-list">';
+  L.forEach(function(o){var E=o.E,f=flagFor(o.i.id),lv=f?flagLevel(f):'',urgent=E&&E.days!=null&&E.days<=db.settings.autoLowDays;
+    h+='<div class="inv-row" data-item="'+o.i.id+'" data-days="'+(E&&E.days!=null?round2(E.days):'')+'" data-left="'+(E&&E.left!=null?round2(E.left):'')+'"><div class="grow"><div class="sh-name">'+esc(o.i.name)+(f?' <span class="lvl '+lv+'">'+LEVEL[lv]+'</span>':'')+'</div>'+
+      '<div class="inv-est'+(urgent?' urgent':'')+'">'+(E&&E.needPack?'<button class="link" data-action="pack-size" data-id="'+o.i.id+'">Add pack size to estimate</button>':esc(estText(E)))+'</div>'+
+      '<div class="sh-meta">'+(E&&E.left!=null?'About '+fmtQty(round2(E.left))+' left · ':'')+'Avg use '+(E?fmtQty(round2(E.avg))+'/day':'—')+' · Last restocked '+esc(shortDate(o.r.date))+(o.r.qty!=null?': '+fmtQty(o.r.qty)+(o.r.unit?' '+esc(o.r.unit):''):'')+(o.r.byName?' by '+esc(o.r.byName):'')+'</div>'+
+      (!unitIsSingle(o.r.unit)?'<div class="sh-meta">'+(isNum(o.i.packSize)?'1 '+esc(o.r.unit.replace(/s$/,''))+' = '+fmtQty(o.i.packSize)+' · ':'')+'<button class="link" data-action="pack-size" data-id="'+o.i.id+'">'+(isNum(o.i.packSize)?'Change pack size':'Set pack size')+'</button></div>':'')+
+      '</div>'+lowBtn(o.i.id)+'</div>';});
+  return h+'</section><div class="btn-row no-print"><button class="btn" data-action="shop-print">Print / Save as PDF</button></div>';}
+function shopRow(f){var E=estimate(f.itemId),lv=flagLevel(f);
+  return '<div class="shop-row lv-'+lv+'" data-id="'+f.id+'" data-item="'+esc(f.itemId)+'" data-level="'+lv+'"><span class="box print-only">☐</span><div class="grow"><div class="sh-name">'+esc(f.name)+' <span class="lvl '+lv+'">'+LEVEL[lv]+'</span></div><div class="sh-meta">'+esc(f.category||'')+(f.byName?' · '+(f.auto?'':'flagged by ')+'<b>'+esc(f.byName)+'</b>':'')+(f.at?' · '+esc(flagWhen(f)):'')+'</div>'+
+    (f.note?'<div class="sh-note">“'+esc(f.note)+'”</div>':'')+(E&&!E.needPack&&E.days!=null?'<div class="inv-est">'+esc(estText(E))+' <small>(estimate)</small></div>':'')+
+    '<span class="no-print"><button class="link" data-action="flag-note" data-id="'+f.id+'">'+(f.note?'Edit note':'+ Add note')+'</button>'+(f.itemId.indexOf('req:')?' · <button class="link" data-action="stock-sheet" data-id="'+esc(f.itemId)+'">Change level</button>':'')+'</span></div>'+
+    '<button class="btn primary gotit no-print" data-action="restock" data-id="'+f.id+'">Got it ✓</button></div>';}
+function renderShop(){if(ui.shopView==='inv')return '<div class="no-print">'+seg('shop-view',[{v:'list',l:'Shopping list'},{v:'inv',l:'Inventory'}],'inv')+'</div>'+renderInventory();
+  var fl=sortedFlags(),h='<div class="no-print">'+seg('shop-view',[{v:'list',l:'Shopping list'},{v:'inv',l:'Inventory'}],'list')+'</div>';
+  h+='<div class="print-only print-head"><h1>Shopping list</h1><p>'+esc(new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'}))+'</p></div>';
+  if(!fl.length)h+='<div class="empty no-print" id="shop-empty"><h2>Nothing to buy</h2><p>Tap <b>Low?</b> next to any item (here or on the Log screen) when it is running low or out.</p></div>';
+  else{
+    h+='<div id="shop-list">';
+    ['out','low'].forEach(function(lv){var g=fl.filter(function(f){return flagLevel(f)===lv;});if(!g.length)return;
+      h+='<h2 class="sec-title lvl-h '+lv+'">'+(lv==='out'?'Out — needed now':'Running low')+' <span class="muted">('+g.length+')</span></h2><section class="card" data-group="'+lv+'">'+g.map(shopRow).join('')+'</section>';});
+    h+='</div><div class="btn-row no-print"><button class="btn" data-action="shop-print">Print / Save as PDF</button><button class="btn" data-action="shop-copy">Copy shopping list</button></div>';
+    h+='<p class="hint no-print">Tap <b>Got it ✓</b> when it has been bought. Items stay on the list until someone does.</p>';}
+  h+='<h2 class="sec-title no-print">Mark something as low or out</h2><div class="search no-print"><input type="text" id="shop-search" placeholder="Find an item…" value="'+esc(ui.shopQ||'')+'" autocomplete="off" aria-label="Find an item"></div>';
+  h+='<div id="shop-pick" class="no-print">'+renderShopPick()+'</div>';
+  return h;}
+function hhReportHTML(R){var names=Object.keys(R.hh);if(!names.length)return '';names.sort(function(a,b){return R.hh[b].q-R.hh[a].q||a.localeCompare(b);});
+  var costs=db.settings.showCosts;
+  return '<section class="card" id="rep-hh"><h3>'+HH_ICON+' Household usage</h3><div class="tbl-wrap"><table class="daily"><thead><tr><th>Item</th><th>Used</th><th>Times</th><th>Avg / day</th>'+(costs?'<th>Cost</th>':'')+'</tr></thead><tbody>'+
+    names.map(function(n){var x=R.hh[n];return '<tr data-name="'+esc(n)+'" data-q="'+round2(x.q)+'"><td>'+esc(n)+'</td><td><b>'+fmtQty(round2(x.q))+'</b></td><td>'+x.t+'</td><td>'+fmtQty(round2(x.q/R.nDays))+'</td>'+(costs?'<td>'+(x.c?money(x.c):'—')+'</td>':'')+'</tr>';}).join('')+
+    '</tbody></table></div><p class="hint" style="padding:0 14px 10px">Not counted in the food servings above.</p></section>';}
+var v15Actions={
+  'stock-sheet':function(el){stockSheet(el.dataset.id);},
+  'toggle-low':function(el){stockSheet(el.dataset.id);},
+  'sheet-chip':function(el){var i=$('#modal-input');if(i){i.value=el.dataset.v;}},
+  'unit-chip':function(el){var i=$('#rs-unit');if(i)i.value=el.dataset.v;},
+  'restock':function(el){restockSheet(el.dataset.id);},
+  'shop-view':function(el){ui.shopView=el.dataset.v;render();},
+  'pack-size':function(el){var x=findItem(el.dataset.id);if(!x)return;var r=lastRestock(x.item.id),u=(r&&r.unit)||x.item.unit||'pack';
+    askNumber('How many in one '+u.replace(/s$/,'')+'?',x.item.packSize,'For example 1 pack = 20 briefs. Used to estimate when '+x.item.name+' runs out.',true).then(function(v){if(v===undefined)return;x.item.packSize=v;save();autoFlag();render();});},
+  'cat-hh':function(el){if(!needAdmin())return;var c=catById(el.dataset.id);if(!c)return;c.household=!c.household;save();render();toast(c.name+(c.household?' is now Household (not food)':' is now food'));},
+  'toggle-daily':function(){if(!needAdmin())return;db.settings.showDaily=!db.settings.showDaily;if(!db.settings.showDaily&&ui.tab==='daily')ui.tab='settings';save();render();},
+  'toggle-autolow':function(){if(!needAdmin())return;db.settings.autoLow=!db.settings.autoLow;save();if(db.settings.autoLow)autoFlag();render();},
+  'set-autolow-days':function(){if(!needAdmin())return;askNumber('Auto-flag Low when about how many days are left?',db.settings.autoLowDays).then(function(v){if(v===undefined||v==null)return;db.settings.autoLowDays=Math.max(0,Math.round(v));save();autoFlag();render();});}
+};
+function recRestock(r){return {id:r.id,item_id:r.itemId,item_name:r.name||'',date:r.date,at_ms:isNum(r.at)?r.at:null,qty:numOrNull(r.qty),unit:r.unit||'',cost:numOrNull(r.cost),by_id:strOrNull(r.by),by_name:strOrNull(r.byName),auto_flagged:!!r.autoFlagged};}
+function restockFromRec(r){return {id:r.id,itemId:r.item_id,name:r.item_name,date:r.date,at:r.at_ms,qty:r.qty,unit:r.unit||'',cost:r.cost,by:r.by_id,byName:r.by_name,autoFlagged:!!r.auto_flagged};}
+
 /* items list (consumed snapshot) */
 function computeSnapshot(S){var M={},catOrder={};db.categories.forEach(function(c,i){catOrder[c.name]=i;});
   mealsIn(S.from,S.to,S.person,S.logger).forEach(function(m){var seen={};
@@ -962,7 +1112,8 @@ function render(){
   $('#subtitle').textContent='';
   var v=$('#view');
   if(ui.tab==='log')v.innerHTML=renderLog();
-  else if(ui.tab==='daily')v.innerHTML=renderDaily();
+  else if(ui.tab==='daily'&&db.settings.showDaily)v.innerHTML=renderDaily();
+  else if(ui.tab==='daily'){ui.tab='log';return render();}
   else if(ui.tab==='history')v.innerHTML=renderHistory();
   else if(ui.tab==='reports')v.innerHTML=renderReports();
   else if(ui.tab==='shop')v.innerHTML=renderShop();
@@ -970,6 +1121,7 @@ function render(){
   renderSavebar();
   sync.renderPending=false;updateSyncUI();
   renderUserBtn();renderLock();renderLowPill();
+  var dt=document.querySelector('.tabs [data-v=daily]');if(dt)dt.hidden=!db.settings.showDaily;
 }
 function seg(action,opts,cur,extraCls){return '<div class="seg '+(extraCls||'')+'">'+opts.map(function(o){var on=o.v===cur;return '<button data-action="'+action+'" data-v="'+esc(o.v)+'" class="'+(on?'on ':'')+(o.cls||'')+'" aria-pressed="'+on+'">'+esc(o.l)+'</button>';}).join('')+'</div>';}
 
@@ -982,7 +1134,7 @@ function renderLog(){
   h+='<div class="lbl">Who ate</div>'+seg('set-person',[ALL].concat(s.people).map(function(p){return {v:p,l:personLabel(p)};}),d.person);
   h+='<div class="lbl">Came from</div>'+seg('set-default-src',[{v:'home',l:'Home',cls:'home'},{v:'dining',l:'Dining Room',cls:'dining'}],d.defaultSource,'src');
   var ids=Object.keys(d.items),diff=ids.filter(function(k){return d.items[k].source!==d.defaultSource;}).length;
-  h+='<p class="hint">Items you check start at <b>'+qtyNice(defaultQty(d.person))+'</b> serving'+(defaultQty(d.person)===1?'':'s')+' and are marked <b>'+SRC[d.defaultSource]+'</b>. You can change any single item below.'+(diff?' <button class="link" data-action="apply-src-all">Mark all checked as '+SRC[d.defaultSource]+'</button>':'')+'</p>';
+  h+='<p class="hint">Items you check start at <b>'+qtyNice(defaultQty(d.person))+'</b> serving'+(defaultQty(d.person)===1?'':'s')+' and are marked <b>'+SRC[d.defaultSource]+'</b>. '+(d.editingId?'Changing this sets every item in the meal.':'Changing this also moves items already checked.')+' You can still change any single item below.'+(diff?' <button class="link" data-action="apply-src-all">Mark all checked as '+SRC[d.defaultSource]+'</button>':'')+'</p>';
   h+='</section>';
   h+='<div class="search"><input type="text" id="f-search" placeholder="Find an item…" value="'+esc(ui.search)+'" autocomplete="off" aria-label="Find an item">'+(ui.search?'<button class="x" data-action="clear-search" aria-label="Clear search">×</button>':'')+'</div>';
   h+='<div id="freq">'+renderFrequent()+'</div>';
@@ -1001,7 +1153,7 @@ function saveCatOpen(){if(dev.rememberCats){dev.catOpen=ui.open;saveDev();}}
 function renderExpandRow(){if(ui.search.trim())return '';var anyClosed=db.categories.some(function(c){return !catOpen(c);}),anyOpen=db.categories.some(catOpen);
   return '<button class="btn" data-action="expand-all"'+(anyClosed?'':' disabled')+'>＋ Expand all</button><button class="btn" data-action="collapse-all"'+(anyOpen?'':' disabled')+'>－ Collapse all</button>';}
 function renderLogList(){
-  var q=ui.search.trim().toLowerCase(),h='',shown=0,sc=freqScores();
+  var q=ui.search.trim().toLowerCase(),h='',shown=0,sc=logFreq();
   db.categories.forEach(function(c){
     var items=sortedItems(c,sc).filter(function(i){return !q||i.name.toLowerCase().indexOf(q)>=0;});
     if(q&&!items.length)return;
@@ -1024,7 +1176,8 @@ function itemRow(key,name){
     h+='<div class="ctrls"><div class="step"><button data-action="qty-dec" data-id="'+esc(key)+'" aria-label="One less">−</button><button class="q" data-action="qty-edit" data-id="'+esc(key)+'" aria-label="Quantity, tap to type">'+qtyNice(l.qty)+'</button><button data-action="qty-inc" data-id="'+esc(key)+'" aria-label="One more">+</button></div>';
     var hf=hasHalf(l.qty);
     h+='<button class="half'+(hf?' on':'')+'" data-action="qty-half" data-id="'+esc(key)+'" aria-pressed="'+hf+'" aria-label="Half portion" title="Add or remove a half portion">'+(hf?'½ ✓':'+ ½')+'</button>';
-    h+='<div class="seg mini src"><button data-action="line-src" data-id="'+esc(key)+'" data-v="home" class="'+(l.source==='home'?'on home':'')+'">Home</button><button data-action="line-src" data-id="'+esc(key)+'" data-v="dining" class="'+(l.source==='dining'?'on dining':'')+'">Dining Room</button></div>';
+    if(isHHItem(l.itemId))h+='<span class="hh-tag">'+HH_ICON+' Household</span>';
+    else h+='<div class="seg mini src"><button data-action="line-src" data-id="'+esc(key)+'" data-v="home" class="'+(l.source==='home'?'on home':'')+'">Home</button><button data-action="line-src" data-id="'+esc(key)+'" data-v="dining" class="'+(l.source==='dining'?'on dining':'')+'">Dining Room</button></div>';
     if(db.settings.showCosts&&!isAdmin()){var u0=lineUnit(l);h+='<div class="costline">'+(u0==null?'No price set':money(u0)+' × '+qtyNice(l.qty)+' = <b>'+money(u0*l.qty)+'</b>')+'</div>';}
     else if(db.settings.showCosts){var u=lineUnit(l);
       h+='<div class="costline">'+(u==null?'<button class="link" data-action="set-price" data-id="'+esc(key)+'">Add '+SRC[l.source]+' price</button>':'<button class="link" style="color:inherit;text-decoration:none;padding-left:0" data-action="set-price" data-id="'+esc(key)+'">'+money(u)+' × '+qtyNice(l.qty)+' = <b>'+money(u*l.qty)+'</b> <span style="color:var(--pri);text-decoration:underline">edit</span></button>')+'</div>';}
@@ -1038,8 +1191,11 @@ function renderSavebar(){
   if(ui.tab!=='log'){bar.hidden=true;return;}
   bar.hidden=false;
   var n=Object.keys(draft.items).length,t=db.settings.showCosts?draftTotal():null;
-  var label=n?((draft.editingId?'Update ':'Save ')+draft.meal+' · '+n+' item'+(n>1?'s':'')+(t!=null?' · '+money(t):'')):'Check the items that were used';
-  bar.innerHTML='<div class="savebar-in">'+(n||draft.editingId?'<button class="btn" data-action="clear-draft">'+(draft.editingId?'Cancel':'Clear')+'</button>':'')+'<button class="btn primary" data-action="save-meal"'+(n?'':' disabled')+'>'+esc(label)+'</button></div>';
+  var same=n&&editUnchanged();
+  var nh=Object.keys(draft.items).filter(function(k){return isHHItem(draft.items[k].itemId);}).length,nf=n-nh,verb=draft.editingId?'Update ':'Save ';
+  var label=same?'No changes':!n?'Check the items that were used':(draft.editingId&&draft.meal===HH_MEAL)||!nf?verb+'Household · '+nItems(n):verb+draft.meal+' · '+nItems(nf)+(nh?' + Household · '+nItems(nh):'');
+  if(n&&!same&&t!=null)label+=' · '+money(t);
+  bar.innerHTML='<div class="savebar-in">'+(n||draft.editingId?'<button class="btn" data-action="clear-draft">'+(draft.editingId?'Cancel':'Clear')+'</button>':'')+'<button class="btn primary" data-action="save-meal"'+(n&&!same?'':' disabled')+'>'+esc(label)+'</button></div>';
 }
 function refreshLogParts(){ // update list without losing scroll/focus
   reindex();
@@ -1051,8 +1207,8 @@ function refreshLogParts(){ // update list without losing scroll/focus
 }
 
 /* history */
-function mealSort(a,b){return MEALS.indexOf(a.meal)-MEALS.indexOf(b.meal)||(a.createdAt||0)-(b.createdAt||0);}
-function srcCounts(m){var c={home:0,dining:0};m.items.forEach(function(e){c[e.source]+=e.qty;});return c;}
+function mealSort(a,b){return MEAL_ORDER.indexOf(a.meal)-MEAL_ORDER.indexOf(b.meal)||(a.createdAt||0)-(b.createdAt||0);}
+function srcCounts(m){var c={home:0,dining:0};m.items.forEach(function(e){if(!isHHLine(e))c[e.source]+=e.qty;});return c;}
 function renderHistory(){
   if(!db.meals.length)return '<div class="empty"><h2>No meals logged yet</h2><p>Meals you save on the Log tab will show up here.</p><button class="btn primary" data-action="tab" data-v="log">Log a meal</button></div>';
   var by={};db.meals.forEach(function(m){(by[m.date]=by[m.date]||[]).push(m);});
@@ -1063,10 +1219,10 @@ function renderHistory(){
     var rel=prettyDate(dt),abs=prettyDate(dt,true);
     h+='<div class="day"><b>'+esc(rel)+'</b><span class="d2">'+(rel!==abs?esc(abs):'')+'</span>'+(dayT!=null?'<span class="tot">'+money(dayT)+'</span>':'')+'</div>';
     ms.forEach(function(m){
-      var c=srcCounts(m),t=costs?mealTotal(m):null;
+      var c=srcCounts(m),t=costs?mealTotal(m):null,hq=0;hhLines(m).forEach(function(e){hq+=e.qty;});
       var names=m.items.map(function(e){return e.name+(e.qty!==1?' ×'+qtyNice(e.qty):'');});
       var txt=names.slice(0,6).join(', ')+(names.length>6?' +'+(names.length-6)+' more':'');
-      h+='<button class="meal-card" data-action="open-meal" data-id="'+m.id+'"><div class="mc-top"><b>'+esc(m.meal)+'</b><span class="who">'+esc(personLabel(m.person))+'</span>'+(t!=null?'<span class="tot">'+money(t)+'</span>':'')+'</div><div class="mc-items">'+esc(txt||'(no items)')+'</div><div class="tags">'+(c.home?'<span class="tag home">Home '+fmtQty(c.home)+'</span>':'')+(c.dining?'<span class="tag dining">Dining Room '+fmtQty(c.dining)+'</span>':'')+(m.notes?'<span class="tag" style="background:#efece5;color:var(--muted)">Note</span>':'')+'</div><div class="mc-by">Logged by <b>'+esc(loggerName(m))+'</b>'+(m.createdAt?' · '+esc(timeStr(m.createdAt,m.date!==ymd(new Date(m.createdAt)))):'')+(editorName(m)?' · edited by '+esc(editorName(m)):'')+'</div></button>';
+      h+='<button class="meal-card" data-action="open-meal" data-id="'+m.id+'"><div class="mc-top"><b>'+esc(mealLabel(m))+'</b>'+(m.meal===HH_MEAL?'':'<span class="who">'+esc(personLabel(m.person))+'</span>')+''+(t!=null?'<span class="tot">'+money(t)+'</span>':'')+'</div><div class="mc-items">'+esc(txt||'(no items)')+'</div><div class="tags">'+(c.home?'<span class="tag home">Home '+fmtQty(c.home)+'</span>':'')+(c.dining?'<span class="tag dining">Dining Room '+fmtQty(c.dining)+'</span>':'')+(hq?'<span class="tag hh">'+HH_ICON+' Household '+fmtQty(hq)+'</span>':'')+(m.notes?'<span class="tag" style="background:#efece5;color:var(--muted)">Note</span>':'')+'</div><div class="mc-by">Logged by <b>'+esc(loggerName(m))+'</b>'+(m.createdAt?' · '+esc(timeStr(m.createdAt,m.date!==ymd(new Date(m.createdAt)))):'')+(editorName(m)?' · edited by '+esc(editorName(m)):'')+'</div></button>';
     });
   });
   if(dates.length>shown.length)h+='<button class="btn block" data-action="hist-more">Show older days</button>';
@@ -1076,11 +1232,11 @@ function openMeal(id){
   var m=db.meals.find(function(x){return x.id===id;});if(!m)return;
   var costs=db.settings.showCosts,t=costs?mealTotal(m):null;
   var html='<p>'+esc(prettyDate(m.date,true))+' · '+esc(personLabel(m.person))+(t!=null?' · <b>'+money(t)+'</b>':'')+'</p><ul class="dl">'+m.items.map(function(e){var u=costs?lineUnit(e):null;
-    return '<li><span class="nm"><b>'+esc(e.name)+'</b> × '+qtyNice(e.qty)+'<span class="cg">'+esc(e.category||'')+'</span></span>'+(u!=null?'<span>'+money(u*e.qty)+'</span>':'')+'<span class="tag '+e.source+'">'+SRC[e.source]+'</span></li>';}).join('')+'</ul>'+(m.notes?'<div class="notes">'+esc(m.notes)+'</div>':'')+'<p class="hint" id="meal-by">Logged by <b>'+esc(loggerName(m))+'</b>'+(m.createdAt?' · '+esc(timeStr(m.createdAt,true)):'')+(editorName(m)?'<br>Last edited by <b>'+esc(editorName(m))+'</b>'+(m.editedAt?' · '+esc(timeStr(m.editedAt,true)):''):'')+'</p>';
-  var btns=[{label:'Edit this meal',value:'edit',style:'primary'},{label:'Log again (copy to new meal)',value:'copy'}];
+    return '<li><span class="nm"><b>'+esc(e.name)+'</b> × '+qtyNice(e.qty)+'<span class="cg">'+esc(e.category||'')+'</span></span>'+(u!=null?'<span>'+money(u*e.qty)+'</span>':'')+(isHHLine(e)?'<span class="tag hh">'+HH_ICON+' Household</span>':'<span class="tag '+e.source+'">'+SRC[e.source]+'</span>')+'</li>';}).join('')+'</ul>'+(m.notes?'<div class="notes">'+esc(m.notes)+'</div>':'')+'<p class="hint" id="meal-by">Logged by <b>'+esc(loggerName(m))+'</b>'+(m.createdAt?' · '+esc(timeStr(m.createdAt,true)):'')+(editorName(m)?'<br>Last edited by <b>'+esc(editorName(m))+'</b>'+(m.editedAt?' · '+esc(timeStr(m.editedAt,true)):''):'')+'</p>';
+  var btns=[{label:m.meal===HH_MEAL?'Edit':'Edit this meal',value:'edit',style:'primary'},{label:'Log again (copy to new meal)',value:'copy'}];
   if(isAdmin())btns.push({label:'Delete',value:'delete',style:'danger'});
   btns.push({label:'Close',value:'close',style:'ghost'});
-  modal({title:m.meal,html:html,buttons:btns}).then(function(r){
+  modal({title:mealLabel(m),html:html,buttons:btns}).then(function(r){
     if(r.button==='edit')startEdit(m,false);
     else if(r.button==='copy')startEdit(m,true);
     else if(r.button==='delete'&&needAdmin())confirmBox('Delete this meal?',m.meal+' on '+prettyDate(m.date,true)+' will be removed.','Delete',true).then(function(ok){if(ok){db.meals=db.meals.filter(function(x){return x.id!==m.id;});save();render();toast('Meal deleted');}});
@@ -1126,9 +1282,11 @@ function loggerOptions(){var o=[{v:'all',l:'Anyone'}],seen={};
   return o;}
 function loggerFilterLabel(v){var o=loggerOptions().filter(function(x){return x.v===v;})[0];return o?o.l:'Anyone';}
 function computeReport(S){
-  var R={count:0,days:{},servings:0,total:0,src:{home:0,dining:0},srcCost:{home:0,dining:0},cat:{},catCost:{},person:{},personCost:{},mealType:{},mealTypeCost:{},items:{},unpriced:0,unpricedNames:{},daily:{},logger:{},lines:[]};
+  var R={hh:{},count:0,days:{},servings:0,total:0,src:{home:0,dining:0},srcCost:{home:0,dining:0},cat:{},catCost:{},person:{},personCost:{},mealType:{},mealTypeCost:{},items:{},unpriced:0,unpricedNames:{},daily:{},logger:{},lines:[]};
   var ms=db.meals.filter(function(m){return m.date>=S.from&&m.date<=S.to&&(S.person==='all'||m.person===S.person||m.person===ALL)&&(S.logger==='all'||loggerKey(m)===S.logger);});
   ms.sort(function(a,b){return a.date<b.date?-1:a.date>b.date?1:mealSort(a,b);});
+  ms.forEach(function(m){m.items.forEach(function(e){if(!isHHLine(e))return;var x=R.hh[lineName(e)]=R.hh[lineName(e)]||{q:0,t:0,c:0};x.q+=e.qty;x.t++;var u=lineUnit(e);if(u!=null)x.c+=u*e.qty;});});
+  ms=ms.map(function(m){var f=foodLines(m);return f.length===m.items.length?m:Object.assign({},m,{items:f});}).filter(function(m){return m.items.length;});
   R.count=ms.length;
   ms.forEach(function(m){
     var d=R.daily[m.date]=R.daily[m.date]||{date:m.date,meals:0,servings:0,home:0,dining:0,total:0,homeQ:0,diningQ:0};
@@ -1176,7 +1334,7 @@ function renderSummary(){
   h+='<div class="btn-row no-print" style="margin:0 0 14px"><button class="btn" data-action="report-print">Print / Save as PDF</button><button class="btn" data-action="report-csv">Download report CSV</button></div>';
   h+='<div id="rep" data-from="'+S.from+'" data-to="'+S.to+'" data-meals="'+R.count+'" data-servings="'+round2(R.servings)+'" data-total="'+(costs?R.total.toFixed(2):'')+'" data-home="'+(costs?R.srcCost.home.toFixed(2):'')+'" data-dining="'+(costs?R.srcCost.dining.toFixed(2):'')+'" data-unpriced="'+(costs?R.unpriced:'')+'">';
   h+='<p class="muted no-print" style="margin:0 4px 10px;font-weight:600">'+esc(rangeLabel(S.from,S.to))+'</p>';
-  if(!R.count)return h+'<div class="empty"><h2>No meals logged in this period</h2><p>Try a different period or filter.</p></div>'+dailyReportHTML(S)+'</div>';
+  if(!R.count)return h+'<div class="empty"><h2>No meals logged in this period</h2><p>Try a different period or filter.</p></div>'+hhReportHTML(R)+dailyReportHTML(S)+'</div>';
   h+='<div class="stats"><div class="stat"><div class="v">'+R.count+'</div><div class="k">Meals</div></div><div class="stat"><div class="v">'+R.daysLogged+'<span style="font-size:.9rem;color:var(--muted)">/'+R.nDays+'</span></div><div class="k">Days logged</div></div><div class="stat"><div class="v">'+fmtQty(R.servings)+'</div><div class="k">Servings</div></div></div>';
   if(costs){
     h+='<section class="card" id="rep-cost"><h3>Total cost</h3><div class="big-total" id="rep-total">'+money(R.total)+'</div><div class="money-grid"><div><div class="v" style="color:var(--home)">'+money(R.srcCost.home)+'</div><div class="k">Home</div></div><div><div class="v" style="color:var(--din)">'+money(R.srcCost.dining)+'</div><div class="k">Dining Room</div></div><div><div class="v">'+money(R.total/Math.max(1,R.daysLogged))+'</div><div class="k">Per logged day</div></div></div>';
@@ -1204,6 +1362,7 @@ function renderSummary(){
   var top=names.slice().sort(function(a,b){return R.items[b].q-R.items[a].q;}).slice(0,10),tm=top.length?R.items[top[0]].q:1;
   h+='<section class="card"><h3>Most eaten</h3><div class="bars">'+top.map(function(k){var it=R.items[k];return barLine(k,it.q/tm,fmtQty(it.q),(it.home?'Home '+fmtQty(it.home):'')+(it.home&&it.dining?' · ':'')+(it.dining?'Dining '+fmtQty(it.dining):''));}).join('')+'</div></section>';
   var lg=Object.keys(R.logger).sort(function(a,b){return R.logger[b]-R.logger[a];}),lm=lg.length?R.logger[lg[0]]:1;
+  h+=hhReportHTML(R);
   h+=dailyReportHTML(S);
   h+='<section class="card" id="rep-logger"><h3>Meals logged by</h3><div class="bars">'+lg.map(function(k){return barLine(k,R.logger[k]/lm,String(R.logger[k]),'');}).join('')+'</div></section>';
   return h+'</div>';
@@ -1229,6 +1388,7 @@ function reportCSV(){
   rows.push([]);rows.push(['Entries']);
   rows.push(['Date','Meal','Who ate','Logged by','Category','Item','Qty','Source'].concat(costs?['Unit cost','Line cost']:[]));
   R.lines.forEach(function(l){rows.push([l.m.date,l.m.meal,personLabel(l.m.person),loggerName(l.m),l.e.category,l.e.name,fmtQty(l.e.qty),SRC[l.e.source]].concat(costs?[l.u==null?'':c2(l.u),l.lc==null?'':c2(l.lc)]:[]));});
+  var HN=Object.keys(R.hh);if(HN.length){rows.push([]);rows.push(['Household usage (not in food servings)']);rows.push(['Item','Used','Times','Avg per day']);HN.forEach(function(n){var x=R.hh[n];rows.push([n,fmtQty(round2(x.q)),x.t,round2(x.q/R.nDays)]);});}
   var DR=computeDaily(S.from,S.to);if(DR.tr.length){rows.push([]);rows.push(['Daily tracker totals']);rows.push(['Tracker','Who','Total','Days logged','Avg per day']);DR.tr.forEach(function(x){x.rows.forEach(function(r){rows.push([x.t.name,r.who,r.total,r.days,r.days?round2(r.avg):'']);});});}
   var dl=dailyCSVRows(S.from,S.to);if(dl.length>1){rows.push([]);rows.push(['Daily log']);rows=rows.concat(dl);}
   download('meal-report-'+S.from+'_to_'+S.to+'.csv','\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n'),'text/csv;charset=utf-8');
@@ -1255,7 +1415,12 @@ function renderSettings(){
   h+='<div class="set-row"><div class="grow"><div class="set-title">Show costs</div><div class="muted" style="font-size:.9rem">Prices per item, meal totals and cost reports</div></div><button class="switch'+(s.showCosts?' on':'')+'" role="switch" aria-checked="'+!!s.showCosts+'" aria-label="Show costs" data-action="toggle-costs" id="costs-switch"><span></span></button></div>';
   if(s.showCosts)h+='<div class="set-row"><div class="grow set-title">Currency symbol</div><input type="text" value="'+esc(s.currency)+'" data-change="currency" style="width:90px;text-align:center" maxlength="4" aria-label="Currency symbol"></div><div class="set-row"><p class="hint" style="margin:0">Set prices for each item under <b>Items &amp; categories</b> below, or tap “Add price” on the Log screen. Home and Dining Room can have different prices.</p></div>';
   h+='</section>';
-  if(isAdmin())h+=renderTrackerSettings();
+  if(isAdmin()){
+    h+='<h2 class="sec-title">Shopping list &amp; stock</h2><section class="card">';
+    h+='<div class="set-row"><div class="grow"><div class="set-title">Auto-flag Low when about '+db.settings.autoLowDays+' day'+(db.settings.autoLowDays===1?'':'s')+' are left</div><div class="muted" style="font-size:.88rem">Uses the run-out estimate (after a restock with a quantity). Someone still has to clear it.</div></div><button class="switch'+(db.settings.autoLow?' on':'')+'" role="switch" aria-checked="'+db.settings.autoLow+'" aria-label="Auto-flag Low" data-action="toggle-autolow" id="autolow-switch"><span></span></button></div>';
+    h+='<div class="set-row"><button class="btn" data-action="set-autolow-days">Change number of days</button></div></section>';
+    h+='<h2 class="sec-title">Daily tab</h2><section class="card"><div class="set-row"><div class="grow"><div class="set-title">Show Daily tab</div><div class="muted" style="font-size:.88rem">Briefs/pads counts, inventory notes, requests. Off by default: household items on the Log screen cover most of this. Anything already entered stays in the calendar and reports.</div></div><button class="switch'+(db.settings.showDaily?' on':'')+'" role="switch" aria-checked="'+db.settings.showDaily+'" aria-label="Show Daily tab" data-action="toggle-daily" id="daily-switch"><span></span></button></div></section>';
+    if(db.settings.showDaily)h+=renderTrackerSettings();}
   h+='<h2 class="sec-title">Who ate (choices on the Log screen)</h2><section class="card">';
   s.people.forEach(function(p,i){h+='<div class="set-row"><input type="text" value="'+esc(p)+'" data-change="rename-person" data-i="'+i+'" aria-label="Name"><button class="iconbtn danger" data-action="del-person" data-i="'+i+'" aria-label="Remove '+esc(p)+'">×</button></div>';});
   h+='<div class="set-row"><button class="btn block" data-action="add-person">+ Add a person</button></div></section>';
@@ -1266,9 +1431,10 @@ function renderSettings(){
   h+='<h2 class="sec-title">Items &amp; categories</h2>';
   db.categories.forEach(function(c,ci){
     var open=!!ui.setOpen[c.id];
-    h+='<section class="card"><button class="cat-head" data-action="set-cat-open" data-id="'+c.id+'" aria-expanded="'+open+'"><span class="cat-name">'+esc(c.name)+'</span><span class="muted" style="font-weight:500;font-size:.92rem">'+c.items.length+' item'+(c.items.length===1?'':'s')+'</span><span class="chev'+(open?' open':'')+'">›</span></button>';
+    h+='<section class="card"><button class="cat-head" data-action="set-cat-open" data-id="'+c.id+'" aria-expanded="'+open+'"><span class="cat-name">'+esc(c.name)+(c.household?' <span class="hh-tag">'+HH_ICON+' Household</span>':'')+'</span><span class="muted" style="font-weight:500;font-size:.92rem">'+c.items.length+' item'+(c.items.length===1?'':'s')+'</span><span class="chev'+(open?' open':'')+'">›</span></button>';
     if(open){
       h+='<div class="cat-tools"><input type="text" value="'+esc(c.name)+'" data-change="rename-cat" data-id="'+c.id+'" aria-label="Category name"><button class="iconbtn" data-action="cat-up" data-id="'+c.id+'" aria-label="Move up"'+(ci===0?' disabled':'')+'>↑</button><button class="iconbtn" data-action="cat-down" data-id="'+c.id+'" aria-label="Move down"'+(ci===db.categories.length-1?' disabled':'')+'>↓</button><button class="iconbtn danger" data-action="del-cat" data-id="'+c.id+'" aria-label="Delete category"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></svg></button></div>';
+      h+='<div class="cat-hh"><div class="grow"><b>Household (not food)</b><div class="muted" style="font-size:.85rem">Saved as Household usage, not part of a meal</div></div><button class="switch'+(c.household?' on':'')+'" role="switch" aria-checked="'+!!c.household+'" aria-label="Household (not food)" data-action="cat-hh" data-id="'+c.id+'"><span></span></button></div>';
       c.items.forEach(function(i){
         h+='<div class="mitem"><div class="mitem-top"><input type="text" value="'+esc(i.name)+'" data-change="rename-item" data-id="'+i.id+'" aria-label="Item name"><button class="iconbtn danger" data-action="del-item" data-id="'+i.id+'" aria-label="Delete '+esc(i.name)+'">×</button></div>';
         if(s.showCosts)h+='<div class="prices"><label class="home"><span>Home price</span><input type="text" inputmode="decimal" placeholder="—" value="'+(isNum(i.cost.home)?i.cost.home.toFixed(2):'')+'" data-change="price" data-src="home" data-id="'+i.id+'"></label><label class="dining"><span>Dining Room price</span><input type="text" inputmode="decimal" placeholder="—" value="'+(isNum(i.cost.dining)?i.cost.dining.toFixed(2):'')+'" data-change="price" data-src="dining" data-id="'+i.id+'"></label></div>';
@@ -1291,7 +1457,7 @@ function renderSettings(){
 
 /* ---------- online database (Supabase via plain fetch) ---------- */
 var CLOUD_KEY='mealTracker.cloud.v1',SHADOW_KEY='mealTracker.shadow.v1',STASH_KEY='mealTracker.preCloud.v1';
-var TABLES={settings:'household_settings',profiles:'profiles',flags:'restock_flags',days:'daily_logs',categories:'categories',foods:'foods',meals:'meals'};
+var TABLES={settings:'household_settings',profiles:'profiles',flags:'restock_flags',days:'daily_logs',restocks:'restock_events',categories:'categories',foods:'foods',meals:'meals'};
 function loadJSON(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
 function saveJSON(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 var cloud=loadJSON(CLOUD_KEY,{})||{};
@@ -1309,41 +1475,43 @@ function stable(v){
 function numOrNull(v){if(v===null||v===undefined||v==='')return null;v=Number(v);return isFinite(v)?v:null;}
 function normItems(items){return (Array.isArray(items)?items:[]).map(function(e){return {itemId:e.itemId||null,name:String(e.name||''),category:String(e.category||''),qty:Number(e.qty)||0,source:e.source==='dining'?'dining':'home',unitCost:numOrNull(e.unitCost)};});}
 /* records: the shape compared and sent to the server (no household_id) */
-function recSettings(s){return {people:(s.people||[]).slice(),show_costs:!!s.showCosts,currency:s.currency||'$',week_start:+s.weekStart||0,item_sort:s.itemSort||'frequent',trackers:normTrackers(s.trackers)||defaultTrackers()};}
-function recFlag(f){return {id:f.id,item_id:f.itemId,item_name:f.name||'',category:f.category||'',note:f.note||'',flagged_by:strOrNull(f.by),flagged_by_name:strOrNull(f.byName),flagged_ms:isNum(f.at)?f.at:null};}
+function recSettings(s){return {people:(s.people||[]).slice(),show_costs:!!s.showCosts,currency:s.currency||'$',week_start:+s.weekStart||0,item_sort:s.itemSort||'frequent',trackers:normTrackers(s.trackers)||defaultTrackers(),show_daily:!!s.showDaily,auto_low:s.autoLow!==false,auto_low_days:isNum(+s.autoLowDays)?Math.round(+s.autoLowDays):3};}
+function recFlag(f){return {id:f.id,item_id:f.itemId,item_name:f.name||'',category:f.category||'',note:f.note||'',flagged_by:strOrNull(f.by),flagged_by_name:strOrNull(f.byName),flagged_ms:isNum(f.at)?f.at:null,level:f.level==='out'?'out':'low',auto:!!f.auto};}
 function strOrNull(v){return v==null||v===''?null:String(v);}
 function recMeal(m){return {id:m.id,date:m.date,meal:m.meal,person:m.person||ALL,notes:m.notes||'',items:normItems(m.items),created_ms:isNum(m.createdAt)?m.createdAt:null,
   entered_by:strOrNull(m.enteredBy),entered_by_name:strOrNull(m.enteredByName),edited_by:strOrNull(m.editedBy),edited_by_name:strOrNull(m.editedByName),edited_ms:isNum(m.editedAt)?m.editedAt:null};}
 function recProfile(p){return {id:p.id,name:p.name,role:p.role==='admin'?'admin':'member',pin_salt:p.salt||null,pin_hash:p.pinHash||null,created_ms:isNum(p.createdAt)?p.createdAt:null};}
 function flatten(d){var r={'settings:main':recSettings(d.settings)};
-  d.categories.forEach(function(c,i){r['categories:'+c.id]={id:c.id,name:c.name,sort_order:i};
-    c.items.forEach(function(f,j){r['foods:'+f.id]={id:f.id,category_id:c.id,name:f.name,price_home:numOrNull(f.cost.home),price_dining:numOrNull(f.cost.dining),sort_order:j};});});
+  d.categories.forEach(function(c,i){r['categories:'+c.id]={id:c.id,name:c.name,sort_order:i,household:!!c.household};
+    c.items.forEach(function(f,j){r['foods:'+f.id]={id:f.id,category_id:c.id,name:f.name,price_home:numOrNull(f.cost.home),price_dining:numOrNull(f.cost.dining),sort_order:j,pack_size:numOrNull(f.packSize),restock_unit:f.unit||''};});});
+  (d.restocks||[]).forEach(function(x){r['restocks:'+x.id]=recRestock(x);});
   d.meals.forEach(function(m){r['meals:'+m.id]=recMeal(m);});
   (d.profiles||[]).forEach(function(p){r['profiles:'+p.id]=recProfile(p);});
   (d.flags||[]).forEach(function(f){r['flags:'+f.id]=recFlag(f);});
   (d.days||[]).forEach(function(x){r['days:'+x.id]=recDay(x);});
   return r;}
 function unflatten(recs){
-  var s=recs['settings:main']||recSettings(freshDB().settings),cats=[],foods=[],meals=[],profs=[],flags=[],days=[];
-  Object.keys(recs).forEach(function(k){var t=k.slice(0,k.indexOf(':'));if(t==='categories')cats.push(recs[k]);else if(t==='foods')foods.push(recs[k]);else if(t==='meals')meals.push(recs[k]);else if(t==='profiles')profs.push(recs[k]);else if(t==='flags')flags.push(recs[k]);else if(t==='days')days.push(recs[k]);});
+  var s=recs['settings:main']||recSettings(freshDB().settings),cats=[],foods=[],meals=[],profs=[],flags=[],days=[],rsts=[];
+  Object.keys(recs).forEach(function(k){var t=k.slice(0,k.indexOf(':'));if(t==='categories')cats.push(recs[k]);else if(t==='foods')foods.push(recs[k]);else if(t==='meals')meals.push(recs[k]);else if(t==='profiles')profs.push(recs[k]);else if(t==='flags')flags.push(recs[k]);else if(t==='days')days.push(recs[k]);else if(t==='restocks')rsts.push(recs[k]);});
   profs.sort(function(a,b){return (a.created_ms||0)-(b.created_ms||0)||(a.id<b.id?-1:1);});
   var ord=function(a,b){return (a.sort_order-b.sort_order)||(a.id<b.id?-1:a.id>b.id?1:0);};
   cats.sort(ord);foods.sort(ord);
-  var byId={},out=cats.map(function(c){var x={id:c.id,name:c.name,items:[]};byId[c.id]=x;return x;});
+  var byId={},out=cats.map(function(c){var x={id:c.id,name:c.name,household:!!c.household,items:[]};byId[c.id]=x;return x;});
   foods.forEach(function(f){var c=byId[f.category_id];
     if(!c){c=out.filter(function(x){return x.name.toLowerCase()==='other';})[0]||out[out.length-1];if(!c){c={id:uid(),name:'Other',items:[]};out.push(c);byId[c.id]=c;}}
-    c.items.push({id:f.id,name:f.name,cost:{home:f.price_home,dining:f.price_dining}});});
-  return normalize({version:1,settings:{people:s.people,showCosts:s.show_costs,currency:s.currency,weekStart:s.week_start,itemSort:s.item_sort||'frequent',trackers:s.trackers},categories:out,days:days.map(dayFromRec),
-    flags:flags.sort(function(a,b){return (a.flagged_ms||0)-(b.flagged_ms||0);}).map(function(f){return {id:f.id,itemId:f.item_id,name:f.item_name,category:f.category,note:f.note,by:f.flagged_by,byName:f.flagged_by_name,at:f.flagged_ms};}),
+    c.items.push({id:f.id,name:f.name,cost:{home:f.price_home,dining:f.price_dining},packSize:f.pack_size,unit:f.restock_unit||''});});
+  return normalize({version:1,settings:{people:s.people,showCosts:s.show_costs,currency:s.currency,weekStart:s.week_start,itemSort:s.item_sort||'frequent',trackers:s.trackers,showDaily:s.show_daily,autoLow:s.auto_low,autoLowDays:s.auto_low_days},categories:out,days:days.map(dayFromRec),restocks:rsts.map(restockFromRec),
+    flags:flags.sort(function(a,b){return (a.flagged_ms||0)-(b.flagged_ms||0);}).map(function(f){return {id:f.id,itemId:f.item_id,name:f.item_name,category:f.category,note:f.note,by:f.flagged_by,byName:f.flagged_by_name,at:f.flagged_ms,level:f.level,auto:f.auto};}),
     profiles:profs.map(function(p){return {id:p.id,name:p.name,role:p.role,salt:p.pin_salt,pinHash:p.pin_hash,createdAt:p.created_ms==null?0:p.created_ms};}),
     meals:meals.map(function(m){var x={id:m.id,date:m.date,meal:m.meal,person:m.person,notes:m.notes,items:normItems(m.items),createdAt:m.created_ms==null?0:m.created_ms};
       if(m.entered_by!=null)x.enteredBy=m.entered_by;if(m.entered_by_name!=null)x.enteredByName=m.entered_by_name;if(m.edited_by!=null)x.editedBy=m.edited_by;if(m.edited_by_name!=null)x.editedByName=m.edited_by_name;if(m.edited_ms!=null)x.editedAt=m.edited_ms;return x;})});}
 function rowToRec(t,r){
-  if(t==='settings')return {people:Array.isArray(r.people)?r.people:[],show_costs:!!r.show_costs,currency:r.currency||'$',week_start:+r.week_start||0,item_sort:r.item_sort||'frequent',trackers:normTrackers(r.trackers)||defaultTrackers()};
+  if(t==='settings')return {people:Array.isArray(r.people)?r.people:[],show_costs:!!r.show_costs,currency:r.currency||'$',week_start:+r.week_start||0,item_sort:r.item_sort||'frequent',trackers:normTrackers(r.trackers)||defaultTrackers(),show_daily:!!r.show_daily,auto_low:r.auto_low!==false,auto_low_days:r.auto_low_days==null?3:Math.round(+r.auto_low_days)};
+  if(t==='restocks')return {id:r.id,item_id:r.item_id,item_name:r.item_name||'',date:String(r.date).slice(0,10),at_ms:r.at_ms==null?null:Number(r.at_ms),qty:numOrNull(r.qty),unit:r.unit||'',cost:numOrNull(r.cost),by_id:strOrNull(r.by_id),by_name:strOrNull(r.by_name),auto_flagged:!!r.auto_flagged};
   if(t==='days')return {id:r.id,date:String(r.date).slice(0,10),counts:objNum(r.counts),notes:objStr(r.notes),requests:r.requests||'',day_note:r.day_note||'',updated_by_name:strOrNull(r.updated_by_name),edited_by:strOrNull(r.edited_by),edited_ms:r.edited_ms==null?null:Number(r.edited_ms)};
-  if(t==='flags')return {id:r.id,item_id:r.item_id,item_name:r.item_name||'',category:r.category||'',note:r.note||'',flagged_by:strOrNull(r.flagged_by),flagged_by_name:strOrNull(r.flagged_by_name),flagged_ms:r.flagged_ms==null?null:Number(r.flagged_ms)};
-  if(t==='categories')return {id:r.id,name:r.name||'',sort_order:+r.sort_order||0};
-  if(t==='foods')return {id:r.id,category_id:r.category_id||null,name:r.name||'',price_home:numOrNull(r.price_home),price_dining:numOrNull(r.price_dining),sort_order:+r.sort_order||0};
+  if(t==='flags')return {id:r.id,item_id:r.item_id,item_name:r.item_name||'',category:r.category||'',note:r.note||'',flagged_by:strOrNull(r.flagged_by),flagged_by_name:strOrNull(r.flagged_by_name),flagged_ms:r.flagged_ms==null?null:Number(r.flagged_ms),level:r.level==='out'?'out':'low',auto:!!r.auto};
+  if(t==='categories')return {id:r.id,name:r.name||'',sort_order:+r.sort_order||0,household:r.household==null?hhName(r.name):!!r.household};
+  if(t==='foods')return {id:r.id,category_id:r.category_id||null,name:r.name||'',price_home:numOrNull(r.price_home),price_dining:numOrNull(r.price_dining),sort_order:+r.sort_order||0,pack_size:numOrNull(r.pack_size),restock_unit:r.restock_unit||''};
   if(t==='profiles')return {id:r.id,name:r.name||'',role:r.role==='admin'?'admin':'member',pin_salt:r.pin_salt||null,pin_hash:r.pin_hash||null,created_ms:r.created_ms==null?null:Number(r.created_ms)};
   return {id:r.id,date:String(r.date).slice(0,10),meal:r.meal,person:r.person||ALL,notes:r.notes||'',items:normItems(r.items),created_ms:r.created_ms==null?null:Number(r.created_ms),
     entered_by:strOrNull(r.entered_by),entered_by_name:strOrNull(r.entered_by_name),edited_by:strOrNull(r.edited_by),edited_by_name:strOrNull(r.edited_by_name),edited_ms:r.edited_ms==null?null:Number(r.edited_ms)};}
@@ -1395,7 +1563,7 @@ function push(hh){
   var ups={},dels={};
   keys.forEach(function(k){var t=k.slice(0,k.indexOf(':'));if(cur[k])(ups[t]=ups[t]||[]).push(k);else if(t!=='settings')(dels[t]=dels[t]||[]).push(k);});
   var steps=[];
-  ['settings','profiles','categories','foods','flags','days','meals'].forEach(function(t){
+  ['settings','profiles','categories','foods','flags','days','restocks','meals'].forEach(function(t){
     var ks=ups[t]||[];for(var i=0;i<ks.length;i+=200)(function(chunk){steps.push(function(){
       var rows=chunk.map(function(k){var r=Object.assign({household_id:hh},cur[k]);if(t!=='settings')r.deleted=false;return r;});
       return api('POST',TABLES[t]+'?on_conflict='+(t==='settings'?'household_id':'household_id,id'),rows,{'Prefer':'resolution=merge-duplicates,return=minimal'})
@@ -1413,10 +1581,11 @@ function fetchServer(hh,full){
   var mq='meals?household_id=eq.'+hh+'&select=*&order=updated_at.asc,id.asc';
   if(!full&&cloud.cursor)mq+='&updated_at=gte.'+encodeURIComponent(new Date(Date.parse(cloud.cursor)-120000).toISOString());else mq+='&deleted=is.false';
   return api('GET','household_settings?household_id=eq.'+hh+'&select=*').then(function(r){res.settings=r||[];
-    return getAll('categories?household_id=eq.'+hh+'&deleted=is.false&select=id,name,sort_order&order=id.asc');}).then(function(r){res.categories=r;
-    return getAll('foods?household_id=eq.'+hh+'&deleted=is.false&select=id,category_id,name,price_home,price_dining,sort_order&order=id.asc');}).then(function(r){res.foods=r;
+    return getAll('categories?household_id=eq.'+hh+'&deleted=is.false&select=id,name,sort_order,household&order=id.asc');}).then(function(r){res.categories=r;
+    return getAll('foods?household_id=eq.'+hh+'&deleted=is.false&select=id,category_id,name,price_home,price_dining,sort_order,pack_size,restock_unit&order=id.asc');}).then(function(r){res.foods=r;
     return getAll('profiles?household_id=eq.'+hh+'&deleted=is.false&select=id,name,role,pin_salt,pin_hash,created_ms&order=id.asc');}).then(function(r){res.profiles=r;
-    return getAll('restock_flags?household_id=eq.'+hh+'&deleted=is.false&select=id,item_id,item_name,category,note,flagged_by,flagged_by_name,flagged_ms&order=id.asc');}).then(function(r){res.flags=r;
+    return getAll('restock_flags?household_id=eq.'+hh+'&deleted=is.false&select=id,item_id,item_name,category,note,flagged_by,flagged_by_name,flagged_ms,level,auto&order=id.asc');}).then(function(r){res.flags=r;
+    return getAll('restock_events?household_id=eq.'+hh+'&deleted=is.false&select=id,item_id,item_name,date,at_ms,qty,unit,cost,by_id,by_name,auto_flagged&order=id.asc');}).then(function(r){res.restocks=r;
     return getAll('daily_logs?household_id=eq.'+hh+'&deleted=is.false&select=id,date,counts,notes,requests,day_note,updated_by_name,edited_by,edited_ms&order=id.asc');}).then(function(r){res.days=r;
     return getAll(mq);}).then(function(r){res.meals=r;res.full=full||!cloud.cursor;return res;});}
 function mergeServer(res){
@@ -1431,17 +1600,18 @@ function mergeServer(res){
   res.profiles.forEach(function(r){serverKeys['profiles:'+r.id]=1;apply('profiles:'+r.id,rowToRec('profiles',r));});
   res.flags.forEach(function(r){serverKeys['flags:'+r.id]=1;apply('flags:'+r.id,rowToRec('flags',r));});
   (res.days||[]).forEach(function(r){serverKeys['days:'+r.id]=1;apply('days:'+r.id,rowToRec('days',r));});
+  (res.restocks||[]).forEach(function(r){serverKeys['restocks:'+r.id]=1;apply('restocks:'+r.id,rowToRec('restocks',r));});
   res.meals.forEach(function(r){serverKeys['meals:'+r.id]=1;apply('meals:'+r.id,r.deleted?null:rowToRec('meals',r));
     if(!cloud.cursor||Date.parse(r.updated_at)>Date.parse(cloud.cursor))cloud.cursor=r.updated_at;});
   Object.keys(cur).forEach(function(k){var t=k.slice(0,k.indexOf(':'));
-    if((t==='categories'||t==='foods'||t==='profiles'||t==='flags'||t==='days'||(t==='meals'&&res.full))&&!serverKeys[k])apply(k,null);});
-  if(changed){db=unflatten(cur);saveLocal();reindex();}
+    if((t==='categories'||t==='foods'||t==='profiles'||t==='flags'||t==='days'||t==='restocks'||(t==='meals'&&res.full))&&!serverKeys[k])apply(k,null);});
+  if(changed){db=unflatten(cur);saveLocal();reindex();setTimeout(autoFlag,0);}
   saveShadow();saveCloud();
   return changed;}
 
 function linkHousehold(hh){
   return fetchServer(hh,true).then(function(res){
-    var empty=!res.settings.length&&!res.categories.length&&!res.foods.length&&!res.meals.length&&!res.profiles.length&&!res.flags.length&&!res.days.length;
+    var empty=!res.settings.length&&!res.categories.length&&!res.foods.length&&!res.meals.length&&!res.profiles.length&&!res.flags.length&&!res.days.length&&!res.restocks.length;
     cloud.cursor=null;
     if(empty){cloud.awaitingUpload=true;shadow={hh:hh,recs:{}};saveShadow();saveCloud();return 'empty';}
     if(looksUsed(db))saveJSON(STASH_KEY,{savedAt:Date.now(),db:db});
@@ -1652,7 +1822,7 @@ function addFood(catId,prefill){
       var it=ex||{id:uid(),name:name,cost:{home:null,dining:null}};
       if(!ex)c.items.push(it);
       save();reindex();
-      if(ui.tab==='log'&&!draft.items[it.id]){draft.items[it.id]={itemId:it.id,qty:defaultQty(draft.person),auto:true,source:draft.defaultSource,unitCost:null,name:it.name,category:c.name};ui.open[c.id]=true;}
+      if(ui.tab==='log'&&!draft.items[it.id]){draft.items[it.id]={itemId:it.id,qty:isHHItem(it.id)?1:defaultQty(draft.person),auto:!isHHItem(it.id),source:isHHItem(it.id)?'home':draft.defaultSource,unitCost:null,name:it.name,category:c.name};ui.open[c.id]=true;}
       ui.search='';render();
       toast(ex?name+' is already in '+c.name:'Added '+name);
       var el=document.getElementById('cat-'+c.id);if(el&&ui.tab==='log')el.scrollIntoView({block:'start'});
@@ -1661,21 +1831,35 @@ function addFood(catId,prefill){
   modal({title:'Which category?',message:'Where should “'+prefill+'” go?',buttons:db.categories.map(function(c){return {label:c.name,value:c.id};}).concat([{label:'Cancel',value:'',style:'ghost'}])}).then(function(r){if(r.button)go(r.button);});
 }
 function stampEdit(m,now){var me=currentUser();m.editedBy=me?me.id:null;m.editedByName=me?me.name:null;m.editedAt=now;}
+function draftEntries(){var keys=Object.keys(draft.items);
+  var order={};var n=0;db.categories.forEach(function(c){c.items.forEach(function(i){order[i.id]=n++;});});
+  return keys.map(function(k){var l=draft.items[k],f=findItem(l.itemId);
+    return {itemId:l.itemId,name:f?f.item.name:l.name,category:f?f.cat.name:(l.category||'Other'),qty:l.qty,source:l.source,unitCost:lineUnit(l)};})
+    .sort(function(a,b){return (order[a.itemId]==null?1e9:order[a.itemId])-(order[b.itemId]==null?1e9:order[b.itemId]);});}
+function mealSig(date,meal,person,notes,items){return JSON.stringify([date,meal,person,notes||'',normItems(items).map(function(e){return [e.itemId,e.name,e.qty,e.source,e.unitCost];}).sort(function(a,b){var x=JSON.stringify(a),y=JSON.stringify(b);return x<y?-1:x>y?1:0;})]);}
+function editUnchanged(){if(!draft.editingId)return false;var m=db.meals.find(function(x){return x.id===draft.editingId;});if(!m)return false;
+  return mealSig(m.date,m.meal,m.person,m.notes,m.items)===mealSig(draft.date,draft.meal,draft.person,draft.notes,Object.keys(draft.items).map(function(k){var l=draft.items[k],f=findItem(l.itemId);return {itemId:l.itemId,name:f?f.item.name:l.name,qty:l.qty,source:l.source,unitCost:isNum(l.unitCost)?l.unitCost:null};}))&&mealSig(0,0,0,0,m.items.map(function(e){return Object.assign({},e,{unitCost:null});}))===mealSig(0,0,0,0,m.items.map(function(e){var f=findItem(e.itemId);return Object.assign({},e,{name:f?f.item.name:e.name,unitCost:null});}));}
 function saveMeal(){
   var keys=Object.keys(draft.items);if(!keys.length)return;
-  var order={};var n=0;db.categories.forEach(function(c){c.items.forEach(function(i){order[i.id]=n++;});});
-  var entries=keys.map(function(k){var l=draft.items[k],f=findItem(l.itemId);
-    return {itemId:l.itemId,name:f?f.item.name:l.name,category:f?f.cat.name:(l.category||'Other'),qty:l.qty,source:l.source,unitCost:lineUnit(l)};})
-    .sort(function(a,b){return (order[a.itemId]==null?1e9:order[a.itemId])-(order[b.itemId]==null?1e9:order[b.itemId]);});
+  if(editUnchanged()){toast('No changes to save');return;}
+  var entries=draftEntries();
   var now=Date.now(),wasEdit=!!draft.editingId;
   var finish=function(msg){save();var keep=draft;draft=newDraft({date:wasEdit?today():keep.date,person:keep.person,defaultSource:keep.defaultSource});resetCatOpen();saveDraft();ui.search='';
     if(wasEdit){ui.tab='history';}render();window.scrollTo(0,0);toast(msg);};
+  var me=currentUser(),hhE=entries.filter(isHHLine),foodE=entries.filter(function(e){return !isHHLine(e);});
+  var hhRec=function(items,notes){return {id:uid(),date:draft.date,meal:HH_MEAL,person:ALL,notes:notes||'',items:items,createdAt:now,updatedAt:now,enteredBy:me?me.id:null,enteredByName:me?me.name:null};};
+  var fin0=finish;finish=function(msg){fin0(msg);autoFlag();};
   if(wasEdit){var m=db.meals.find(function(x){return x.id===draft.editingId;});
-    if(m){m.date=draft.date;m.meal=draft.meal;m.person=draft.person;m.notes=draft.notes||'';m.items=entries;m.updatedAt=now;stampEdit(m,now);return finish('Meal updated ✓');}}
-  var me=currentUser();
+    if(m){var asHH=m.meal===HH_MEAL||!foodE.length;
+      m.date=draft.date;m.meal=asHH?HH_MEAL:draft.meal;m.person=asHH&&m.meal===HH_MEAL&&!foodE.length?m.person:draft.person;m.notes=draft.notes||'';m.items=asHH?entries:foodE;m.updatedAt=now;stampEdit(m,now);
+      if(!asHH&&hhE.length){db.meals.push(hhRec(hhE));return finish('Meal updated ✓ · Household items saved separately');}
+      return finish((m.meal===HH_MEAL?'Household':'Meal')+' updated ✓');}}
+  if(!foodE.length){db.meals.push(hhRec(hhE,draft.notes));return finish('Household · '+nItems(hhE.length)+' saved ✓');}
+  if(hhE.length){db.meals.push(hhRec(hhE));entries=foodE;}
+  var hhMsg=hhE.length?' + Household':'';
   var rec={id:uid(),date:draft.date,meal:draft.meal,person:draft.person,notes:draft.notes||'',items:entries,createdAt:now,updatedAt:now,enteredBy:me?me.id:null,enteredByName:me?me.name:null};
   var dup=db.meals.find(function(m){return m.date===rec.date&&m.meal===rec.meal&&m.person===rec.person;});
-  if(!dup||wasEdit){db.meals.push(rec);return finish(rec.meal+' saved ✓');}
+  if(!dup||wasEdit){db.meals.push(rec);return finish(rec.meal+hhMsg+' saved ✓');}
   modal({title:'Already logged',message:'There is already a '+rec.meal+' for '+personLabel(rec.person)+' on '+prettyDate(rec.date,true)+'. Add these items to it?',buttons:[{label:'Add to that meal',value:'merge',style:'primary'},{label:'Save as a separate meal',value:'new'},{label:'Cancel',value:'cancel',style:'ghost'}]}).then(function(r){
     if(r.button==='merge'){entries.forEach(function(e){var x=dup.items.find(function(d){return d.itemId===e.itemId&&d.source===e.source;});if(x)x.qty=round2(x.qty+e.qty);else dup.items.push(e);});
       if(rec.notes)dup.notes=(dup.notes?dup.notes+'\n':'')+rec.notes;dup.updatedAt=now;stampEdit(dup,now);finish('Added to '+rec.meal+' ✓');}
@@ -1709,7 +1893,9 @@ var actions={
   'set-person':function(el){var od=defaultQty(draft.person),nd=defaultQty(el.dataset.v);draft.person=el.dataset.v;
     if(od!==nd)Object.keys(draft.items).forEach(function(k){var l=draft.items[k];if(l.auto!==false&&l.qty===od)l.qty=nd;});
     saveDraft();render();},
-  'set-default-src':function(el){draft.defaultSource=el.dataset.v;saveDraft();render();},
+  'set-default-src':function(el){var v=el.dataset.v,ed=!!draft.editingId,n=0;draft.defaultSource=v;
+    Object.keys(draft.items).forEach(function(k){var l=draft.items[k];if(isHHItem(l.itemId))return;if(!ed&&l.srcPicked)return;if(l.source!==v){l.source=v;l.unitCost=null;n++;}if(ed)l.srcPicked=false;});
+    saveDraft();render();if(n)toast(ed?'All items set to '+SRC[v]:'Checked items set to '+SRC[v]);},
   'apply-src-all':function(){Object.keys(draft.items).forEach(function(k){var l=draft.items[k];if(l.source!==draft.defaultSource){l.source=draft.defaultSource;l.unitCost=null;}});saveDraft();render();},
   'toggle-cat':function(el){var c=db.categories.filter(function(x){return x.id===el.dataset.id;})[0];if(!c)return;ui.open[c.id]=!catOpen(c);saveCatOpen();refreshLogParts();},
   'expand-all':function(){db.categories.forEach(function(c){ui.open[c.id]=true;});saveCatOpen();refreshLogParts();},
@@ -1719,13 +1905,13 @@ var actions={
   'toggle-item':function(el){var k=el.dataset.id;
     var fc=findItem(k);if(fc&&ui.open[fc.cat.id]==null)ui.open[fc.cat.id]=true; // keep the category open while working in it
     if(draft.items[k])delete draft.items[k];
-    else{var f=findItem(k);if(!f)return;draft.items[k]={itemId:k,qty:defaultQty(draft.person),auto:true,source:draft.defaultSource,unitCost:null,name:f.item.name,category:f.cat.name};}
+    else{var f=findItem(k);if(!f)return;draft.items[k]={itemId:k,qty:isHHItem(k)?1:defaultQty(draft.person),auto:!isHHItem(k),source:isHHItem(k)?'home':draft.defaultSource,unitCost:null,name:f.item.name,category:f.cat.name};}
     refreshLogParts();},
   'qty-inc':function(el){bump(el.dataset.id,1);},
   'qty-dec':function(el){bump(el.dataset.id,-1);},
   'qty-half':function(el){var l=draft.items[el.dataset.id];if(!l)return;bump(el.dataset.id,hasHalf(l.qty)?-0.5:0.5);},
   'qty-edit':function(el){var k=el.dataset.id,l=draft.items[k];if(!l)return;askNumber('How many?',fmtQty(l.qty),'Use decimals for part portions, e.g. 0.5 or 1.5').then(function(n){if(n==null)return;if(n<=0){delete draft.items[k];}else{l.qty=round2(n);l.auto=false;}refreshLogParts();});},
-  'line-src':function(el){var l=draft.items[el.dataset.id];if(!l)return;if(l.source!==el.dataset.v){l.source=el.dataset.v;l.unitCost=null;}refreshLogParts();},
+  'line-src':function(el){var l=draft.items[el.dataset.id];if(!l)return;if(l.source!==el.dataset.v){l.source=el.dataset.v;l.unitCost=null;}l.srcPicked=el.dataset.v!==draft.defaultSource;refreshLogParts();},
   'set-price':function(el){if(!needAdmin())return;var k=el.dataset.id,l=draft.items[k];if(!l)return;var f=findItem(l.itemId);
     askNumber(SRC[l.source]+' price'+(f?' for '+f.item.name:''),lineUnit(l)!=null?lineUnit(l).toFixed(2):'','Price for one serving. '+(f?'This also becomes the usual '+SRC[l.source]+' price for '+f.item.name+'.':''),true).then(function(n){
       if(n===undefined)return;if(f)f.item.cost[l.source]=n;l.unitCost=n;save();refreshLogParts();});},
@@ -1751,24 +1937,24 @@ var actions={
   'cat-down':function(el){if(!needAdmin())return;moveCat(el.dataset.id,1);},
   'del-cat':function(el){if(!needAdmin())return;var c=catById(el.dataset.id);if(!c)return;confirmBox('Delete '+c.name+'?','The category and its '+c.items.length+' items will be removed from the list. Meals already logged are kept.','Delete',true).then(function(ok){if(ok){db.categories=db.categories.filter(function(x){return x!==c;});save();render();}});},
   'del-item':function(el){if(!needAdmin())return;var f=findItem(el.dataset.id);if(!f)return;confirmBox('Delete '+f.item.name+'?','It will be removed from the list. Meals already logged are kept.','Delete',true).then(function(ok){if(ok){f.cat.items=f.cat.items.filter(function(i){return i!==f.item;});save();render();}});},
-  'add-cat':function(){if(!needAdmin())return;askText('New category','','e.g. Breakfast items').then(function(n){if(!n)return;var c={id:uid(),name:n,items:[]};db.categories.push(c);ui.setOpen[c.id]=true;save();render();});},
+  'add-cat':function(){if(!needAdmin())return;askText('New category','','e.g. Breakfast items').then(function(n){if(!n)return;var c={id:uid(),name:n,household:hhName(n),items:[]};db.categories.push(c);ui.setOpen[c.id]=true;save();render();});},
   'export-csv':exportCSV,
   'export-json':exportJSON,
   'import-json':function(){if(!needAdmin())return;var f=$('#restore-file');f.value='';f.click();},
   'wipe-meals':function(){if(!needAdmin())return;confirmBox('Delete all logged meals?','All '+db.meals.length+' meals '+(signedIn()?'on this device AND in the online database':'on this device')+' will be deleted. Your item list and settings stay. Consider downloading a backup first.','Delete all meals',true).then(function(ok){if(ok){db.meals=[];save();render();toast('All meals deleted');}});},
-  'reset-all':function(){if(!needAdmin())return;confirmBox('Reset everything?','Deletes all meals, items, prices and settings '+(signedIn()?'on this device AND in the online database':'on this device')+' and starts fresh.','Reset everything',true).then(function(ok){if(ok){db=freshDB();save();draft=newDraft();saveDraft();render();toast('Reset complete');}});},
+  'reset-all':function(){if(!needAdmin())return;confirmBox('Reset everything?','Deletes all meals, items, prices and settings '+(signedIn()?'on this device AND in the online database':'on this device')+' and starts fresh.','Reset everything',true).then(function(ok){if(ok){db=normalize(freshDB());save();draft=newDraft();saveDraft();render();toast('Reset complete');}});},
   'modal-btn':function(el){closeModal(el.dataset.v);},
   'modal-dismiss':function(){closeModal(null);}
 };
-Object.assign(actions,cloudActions,profileActions,v14Actions,dailyActions);
+Object.assign(actions,cloudActions,profileActions,v14Actions,dailyActions,v15Actions);
 document.addEventListener('click',function(e){var el=e.target.closest('[data-action]');if(!el||el.disabled)return;var fn=actions[el.dataset.action];if(fn){e.preventDefault();fn(el,e);}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modalResolve)closeModal(null);});
 document.addEventListener('input',function(e){var t=e.target;
   if(t.id==='shop-search'){ui.shopQ=t.value;var sp=$('#shop-pick');if(sp)sp.innerHTML=renderShopPick();return;}
   if(t.id==='f-search'){ui.search=t.value;var ll=$('#log-list');if(ll)ll.innerHTML=renderLogList();var sx=document.querySelector('.search .x');if(!!ui.search!==!!sx){var wrap=t.parentNode;if(ui.search&&!sx){wrap.insertAdjacentHTML('beforeend','<button class="x" data-action="clear-search" aria-label="Clear search">×</button>');}else if(sx)sx.remove();}}
-  else if(t.id==='f-notes'){draft.notes=t.value;saveDraft();}});
+  else if(t.id==='f-notes'){draft.notes=t.value;saveDraft();if(draft.editingId)renderSavebar();}});
 document.addEventListener('change',function(e){var t=e.target,v=t.value;
-  if(t.id==='f-date'){if(v){draft.date=v;saveDraft();}else t.value=draft.date;return;}
+  if(t.id==='f-date'){if(v){draft.date=v;saveDraft();renderSavebar();}else t.value=draft.date;return;}
   if(t.id==='s-from'||t.id==='s-to'){if(!v)return;ui.sum.preset='custom';ui.sum[t.id==='s-from'?'from':'to']=v;render();return;}
   if(t.id==='s-logger'){ui.sum.logger=v;render();return;}
   if(t.id==='restore-file'){if(t.files&&t.files[0])importJSON(t.files[0]);return;}
@@ -1799,7 +1985,7 @@ if(dev.rememberCats&&dev.catOpen)ui.open=dev.catOpen;
   }).catch(function(){});
 })();
 checkAutoLock();
-render();
+render();setTimeout(function(){if(!lockNeeded())autoFlag();},400);
 if(signedIn())syncNow();
 if(restoredDraft)setTimeout(function(){toast('Restored your unsaved meal');},300);
 window.__mealTracker={get db(){return db;},get draft(){return draft;},get cloud(){return cloud;},get sync(){return sync;},syncNow:syncNow,pendingCount:pendingCount,get dev(){return dev;},checkAutoLock:checkAutoLock,preparePrint:preparePrint,freqScores:freqScores,computeSnapshot:computeSnapshot,sha256hex:sha256hex,hashPin:hashPin,computeReport:computeReport};
