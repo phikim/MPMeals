@@ -252,6 +252,9 @@ table.daily tfoot th{border-bottom:0;border-top:2px solid var(--ink)}
 .big-total{font-size:2.2rem;font-weight:800;text-align:center;padding:4px 14px 0}
 .mc-by{color:var(--muted);font-size:.86rem;margin-top:6px}
 .print-only{display:none}
+.appfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:14px 4px 4px;color:var(--muted);font-size:.85rem}
+.appfoot .ver,.lock-ver{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.lock-ver{position:fixed;right:12px;bottom:calc(8px + var(--safe-b));opacity:.85}
 @media print{
   @page{margin:12mm}
   html{font-size:12pt}
@@ -289,6 +292,7 @@ table.daily tfoot th{border-bottom:0;border-top:2px solid var(--ink)}
 'use strict';
 var KEY='mealTracker.v1', DRAFT_KEY='mealTracker.draft.v1';
 var MEALS=['Breakfast','Lunch','Dinner','Snack'];
+var APP_VERSION='1.3.0';
 var ALL='Both';
 var SRC={home:'Home',dining:'Dining Room'};
 var CHECK='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -483,7 +487,7 @@ function renderLock(){
       else h+='<button data-action="pin-key" data-v="'+k+'">'+k+'</button>';});
     h+='</div>';
   }
-  el.innerHTML=h+'</div>';
+  el.innerHTML=h+'</div><div class="lock-ver">v'+APP_VERSION+'</div>';
 }
 function pinKey(k){
   if(lockUI.busy||lockUI.mode!=='pin')return;
@@ -827,7 +831,7 @@ function renderSettings(){
     var admins=db.profiles.filter(function(p){return p.role==='admin';}).map(function(p){return p.name;});
     h+='<p class="hint" style="margin:0 4px 6px">Settings, prices, foods and users are managed by an admin ('+esc(admins.join(', '))+').</p>';
     h+='<h2 class="sec-title">Your data</h2><section class="card pad"><p style="margin:0 0 6px">'+db.meals.length+' meals saved'+(signedIn()?' on this device and in the online database':' on this device')+'.</p><div class="btn-row"><button class="btn" data-action="export-csv">Download spreadsheet (CSV)</button><button class="btn" data-action="export-json">Download backup</button></div></section>';
-    return h;}
+    return h+'<div class="appfoot" id="appfoot">'+footHTML()+'</div>';}
   h+='<h2 class="sec-title" id="users-sec">People &amp; PINs</h2><section class="card">';
   db.profiles.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(p){
     h+='<button class="set-row" style="width:100%;border-left:0;border-right:0;border-bottom:0;background:#fff;text-align:left;min-height:64px" data-action="edit-profile" data-id="'+p.id+'">'+avatar(p)+'<span class="grow"><span class="set-title">'+esc(p.name)+(p.id===dev.profileId?' <span class="muted" style="font-weight:500">(you)</span>':'')+'</span><br><span class="role'+(p.role==='admin'?' admin':'')+'">'+(p.role==='admin'?'Admin':'Member')+'</span>'+(staysHere(p)?' <span class="role stay">Stays signed in here</span>':'')+'</span><span class="muted">Edit ›</span></button>';});
@@ -866,7 +870,7 @@ function renderSettings(){
   h+='<div class="btn-row"><button class="btn" data-action="export-csv">Download spreadsheet (CSV)</button><button class="btn" data-action="export-json">Download backup</button></div>';
   h+='<div class="btn-row"><button class="btn" data-action="import-json">Restore from backup…</button></div>';
   h+='<div class="btn-row"><button class="btn danger" data-action="wipe-meals">Delete all logged meals</button><button class="btn danger" data-action="reset-all">Reset everything</button></div>';
-  h+='</section><p class="hint" style="text-align:center">Meal Tracker · works offline · no account needed</p>';
+  h+='</section><div class="appfoot" id="appfoot">'+footHTML()+'</div>';
   return h;
 }
 
@@ -1031,12 +1035,13 @@ function doSync(){
   if(!signedIn()){setSync(cloudReady()?'signedout':'');return Promise.resolve();}
   if(navigator.onLine===false){setSync('offline');return Promise.resolve();}
   setSync('syncing');
-  var linked=null;
+  var linked=null,wasAwaiting=!!cloud.awaitingUpload;
   return Promise.resolve().then(function(){
     if(cloud.householdId)return cloud.householdId;
     return api('POST','rpc/my_household',{p_name:'Our household'}).then(function(id){cloud.householdId=id;saveCloud();return id;});
   }).then(function(hh){
-    if(!shadow||shadow.hh!==hh)return linkHousehold(hh).then(function(r){linked=r;return hh;});
+    // also re-check while waiting for the first upload: another device may have uploaded since
+    if(!shadow||shadow.hh!==hh||cloud.awaitingUpload)return linkHousehold(hh).then(function(r){if(!(r==='empty'&&wasAwaiting))linked=r;return hh;});
     return hh;
   }).then(function(hh){
     if(cloud.awaitingUpload)return 'awaiting';
@@ -1114,11 +1119,15 @@ function updateSyncUI(){
   if(!cloudReady()||!st){pill.hidden=true;}else{var t=SYNC_TXT[st]||['',''],n=pendingCount();
     pill.hidden=false;pill.className='syncpill '+t[0];pill.textContent=t[1]+(st==='offline'&&n?' · '+n+' waiting':'');}
   var cs=$('#cloud-status');if(cs)cs.innerHTML=cloudStatusHTML();
+  var af=$('#appfoot');if(af)af.innerHTML=footHTML();
   var cu=$('#cloud-upload');if(cu)cu.innerHTML=uploadHTML();}
+function footHTML(){var t=signedIn()?'synced with your online database · works offline too':cloudReady()?'online database connected · not signed in':'works offline · no account needed';
+  return '<span>Meal Tracker · '+t+'</span><span class="ver">v'+APP_VERSION+'</span>';}
 function cloudStatusHTML(){
   var st=sync.state,n=pendingCount(),cls='',txt;
   if(st==='syncing'){txt='Syncing…';}
   else if(st==='offline'){cls='warn';txt=n?'No connection. '+n+' change'+(n===1?' is':'s are')+' saved on this device and will be sent automatically when you are back online.':'No connection right now. Everything is saved on this device.';}
+  else if(st==='awaiting'&&!db.profiles.length){cls='warn';txt='Connected. The online household has no data yet. If another device is uploading, its people will appear here in a few seconds (checking automatically).';}
   else if(st==='awaiting'){cls='warn';txt='The online database is empty. Tap “Upload this device\'s data” below to start syncing.';}
   else if(st==='error'){cls='bad';txt='Could not sync: '+esc(sync.msg||'unknown error');}
   else if(st==='signedout'){cls='warn';txt='Signed out. Please sign in again.';}
@@ -1186,7 +1195,7 @@ var cloudActions={
   'cloud-signout':function(){if(!cloudAllowed())return;var s=cloud.session;
     if(s)authCall('logout',{},s.access_token).catch(function(){});
     cloud.lastEmail=s&&s.user&&s.user.email;cloud.session=null;cloud.householdId=null;saveCloud();setSync('signedout');render();toast('Signed out. Your data stays on this device.');},
-  'cloud-sync':function(){syncNow().then(function(){toast(sync.state==='ok'?'Up to date ✓':sync.state==='offline'?'Offline. Will sync later.':sync.state==='awaiting'?'Upload needed first':'Could not sync');});},
+  'cloud-sync':function(){syncNow().then(function(){toast(sync.state==='ok'?'Up to date ✓':sync.state==='offline'?'Offline. Will sync later.':sync.state==='awaiting'?(db.profiles.length?'Upload needed first':'Still empty online. Upload from your other device first.'):'Could not sync');});},
   'cloud-upload':function(){if(!cloudAllowed())return;uploadLocal();},
   'cloud-disconnect':function(){if(!cloudAllowed())return;confirmBox('Disconnect the online database?','This device stops syncing. Everything stays saved on this device and online.','Disconnect',true).then(function(ok){if(!ok)return;
     var s=cloud.session;if(s)authCall('logout',{},s.access_token).catch(function(){});cloud={};saveCloud();setSync('');render();});}
@@ -1195,6 +1204,11 @@ window.addEventListener('online',function(){syncNow();});
 window.addEventListener('offline',function(){if(signedIn())setSync('offline');});
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&signedIn())syncNow();});
 setInterval(function(){if(document.visibilityState==='visible'&&signedIn()&&!sync.running)syncNow();},60000);
+// While the household is still empty online, look again every few seconds (every 5 s on the
+// lock screen of a device that is waiting for another device to upload, otherwise every 30 s).
+var lastAwaitPoll=0;
+setInterval(function(){if(document.visibilityState!=='visible'||!signedIn()||!cloud.awaitingUpload||sync.running||sync.queued)return;
+  if(lockNeeded()||Date.now()-lastAwaitPoll>30000){lastAwaitPoll=Date.now();syncNow();}},5000);
 
 /* ---------- actions ---------- */
 function setTab(t){ui.tab=t;render();window.scrollTo(0,0);}

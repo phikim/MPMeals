@@ -1,7 +1,7 @@
 /* Meal Tracker service worker: keeps the app itself available offline.
    Only this site's own files are cached. Online-database requests (Supabase)
    are never touched, so data always comes straight from the database. */
-var CACHE = 'meal-tracker-v3';
+var CACHE = 'meal-tracker-v1.3.0';
 var FILES = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', function (e) {
