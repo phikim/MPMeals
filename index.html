@@ -285,6 +285,7 @@ table.daily tfoot th{border-bottom:0;border-top:2px solid var(--ink)}
 .lowbtn svg{width:22px;height:22px}
 .lowpill{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;padding:6px 12px 6px 9px;min-height:38px;background:#c62828;color:#fff;font-weight:800;font-size:.95rem;white-space:nowrap}
 .lowpill[hidden]{display:none}
+.lowpill.deals-only{background:#8a1c4a}
 .lowpill svg{width:20px;height:20px}
 .lowpill .blink{width:11px;height:11px;border-radius:50%;background:#ffeb3b;box-shadow:0 0 0 0 rgba(255,235,59,.9);animation:lowblink 1s steps(2,jump-none) infinite, lowglow 1.6s ease-out infinite}
 @keyframes lowblink{0%{opacity:1}100%{opacity:.15}}
@@ -394,6 +395,17 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 .rs-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:6px 0}.rs-grid label,.rs-cost{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:.9rem}.rs-grid input,.rs-cost input{box-sizing:border-box;min-width:0;font-size:1.15rem;padding:10px;border:1.5px solid var(--line);border-radius:12px;width:100%}
 .inv-row{display:flex;align-items:center;gap:10px;padding:12px 0 12px 16px;border-bottom:1px solid var(--line)}.inv-row:last-child{border-bottom:0}
 .inv-est{font-weight:700;color:#2d5a4b;margin:2px 0}.inv-est.urgent{color:#c62828}.inv-est small{font-weight:500;color:var(--muted)}
+.deal-tag{display:inline-block;font-size:.75rem;font-weight:800;color:#8a1c4a;background:#fde4ef;border-radius:999px;padding:2px 8px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.nm-col{flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:4px;min-width:0}
+.nm-col .deal-tag{margin-left:0;white-space:normal}
+#deals-card h2{margin:0 0 6px;font-size:1.15rem}
+.deal-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-top:1px solid var(--line)}
+.deal-row:first-of-type{border-top:0}
+.deal-name{font-weight:800}
+.deal-when{font-weight:800;color:#8a1c4a}
+.deal-meta{font-size:.85rem;color:var(--muted)}
+.deal-price{font-weight:700}.deal-price s{color:var(--muted);font-weight:500;margin-left:4px}
+.deal-row a{flex:none;font-weight:700;color:var(--pri);padding:4px 0}
 .hh-tag{display:inline-block;font-size:.72rem;font-weight:700;color:#7a5a00;background:#fbf3dc;border-radius:999px;padding:2px 8px;margin-left:6px}
 .tag.hh{background:#fbf3dc;color:#7a5a00}
 .ci.hh i,.ml.hh i{background:#b08900}
@@ -424,7 +436,7 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 'use strict';
 var KEY='mealTracker.v1', DRAFT_KEY='mealTracker.draft.v1';
 var MEALS=['Breakfast','Lunch','Dinner','Snack','Other'];
-var APP_VERSION='1.5.0';
+var APP_VERSION='1.6.0';
 var ALL='Both';
 var SRC={home:'Home',dining:'Dining Room'};
 var CHECK='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -922,11 +934,14 @@ function setLevel(itemId,level,note,auto){var x=findItem(itemId),u=currentUser()
 function setLow(itemId,on){setLevel(itemId,on?'low':null);}
 function flagCounts(){var o=0,l=0;db.flags.forEach(function(f){if(flagLevel(f)==='out')o++;else l++;});return {out:o,low:l,n:o+l};}
 function renderLowPill(){var b=$('#lowpill'),c=flagCounts();if(!b)return;
-  if(!c.n||lockNeeded()){b.hidden=true;return;}
-  var parts=[];if(c.out)parts.push(c.out+' out');if(c.low)parts.push(c.low+' low');
-  b.hidden=false;b.classList.toggle('has-out',!!c.out);
+  var nd=currentDeals().length;
+  if((!c.n&&!nd)||lockNeeded()){b.hidden=true;return;}
+  b.hidden=false;b.classList.toggle('has-out',!!c.out);b.classList.toggle('deals-only',!c.n);
+  if(!c.n){b.innerHTML=CART+'<span class="lp-two"><b>🏷 '+nd+' deal'+(nd===1?'':'s')+'</b><small>this week</small></span>';
+    b.setAttribute('aria-label',nd+' store deal'+(nd===1?'':'s')+'. Open the shopping list');return;}
+  var parts=[];if(c.out)parts.push(c.out+' out');if(c.low)parts.push(c.low+' low');if(nd)parts.push('🏷 '+nd);
   b.innerHTML='<i class="blink" aria-hidden="true"></i>'+CART+'<span class="lp-two"><b>'+c.n+' to buy</b><small>'+parts.join(' · ')+'</small></span>';
-  b.setAttribute('aria-label',c.n+' item'+(c.n===1?'':'s')+' to buy: '+parts.join(', ')+'. Open the shopping list');}
+  b.setAttribute('aria-label',c.n+' item'+(c.n===1?'':'s')+' to buy: '+parts.join(', ')+(nd?' (🏷 '+nd+' store deals)':'')+'. Open the shopping list');}
 var STOCK_CHIPS=['Plenty','Half left','Last package opened','Out'];
 function stockSheet(itemId){var x=findItem(itemId);if(!x)return;var f=flagFor(itemId);
   var html='<div class="chips wrap">'+STOCK_CHIPS.map(function(c){return '<button class="chip" data-action="sheet-chip" data-v="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</div><p class="hint" style="margin:4px 0 0">Optional note (how much is left?)</p>';
@@ -996,19 +1011,20 @@ function renderInventory(){var L=invItems(),h='';
   if(!L.length)return h+'<div class="empty" id="inv-empty"><h2>Nothing tracked yet</h2><p>When you tap <b>Got it</b> on the shopping list and enter how many you bought, the item shows up here with an estimate of when it will run out.</p></div>';
   h+='<p class="hint" style="margin:0 4px 10px">Estimates are approximate: what you bought, minus what has been logged since, at the recent daily rate.</p><section class="card" id="inv-list">';
   L.forEach(function(o){var E=o.E,f=flagFor(o.i.id),lv=f?flagLevel(f):'',urgent=E&&E.days!=null&&E.days<=db.settings.autoLowDays;
-    h+='<div class="inv-row" data-item="'+o.i.id+'" data-days="'+(E&&E.days!=null?round2(E.days):'')+'" data-left="'+(E&&E.left!=null?round2(E.left):'')+'"><div class="grow"><div class="sh-name">'+esc(o.i.name)+(f?' <span class="lvl '+lv+'">'+LEVEL[lv]+'</span>':'')+'</div>'+
+    h+='<div class="inv-row" data-item="'+o.i.id+'" data-days="'+(E&&E.days!=null?round2(E.days):'')+'" data-left="'+(E&&E.left!=null?round2(E.left):'')+'"><div class="grow"><div class="sh-name">'+esc(o.i.name)+(f?' <span class="lvl '+lv+'">'+LEVEL[lv]+'</span>':'')+dealTag(o.i.id)+'</div>'+
       '<div class="inv-est'+(urgent?' urgent':'')+'">'+(E&&E.needPack?'<button class="link" data-action="pack-size" data-id="'+o.i.id+'">Add pack size to estimate</button>':esc(estText(E)))+'</div>'+
       '<div class="sh-meta">'+(E&&E.left!=null?'About '+fmtQty(round2(E.left))+' left · ':'')+'Avg use '+(E?fmtQty(round2(E.avg))+'/day':'—')+' · Last restocked '+esc(shortDate(o.r.date))+(o.r.qty!=null?': '+fmtQty(o.r.qty)+(o.r.unit?' '+esc(o.r.unit):''):'')+(o.r.byName?' by '+esc(o.r.byName):'')+'</div>'+
       (!unitIsSingle(o.r.unit)?'<div class="sh-meta">'+(isNum(o.i.packSize)?'1 '+esc(o.r.unit.replace(/s$/,''))+' = '+fmtQty(o.i.packSize)+' · ':'')+'<button class="link" data-action="pack-size" data-id="'+o.i.id+'">'+(isNum(o.i.packSize)?'Change pack size':'Set pack size')+'</button></div>':'')+
       '</div>'+lowBtn(o.i.id)+'</div>';});
   return h+'</section><div class="btn-row no-print"><button class="btn" data-action="shop-print">Print / Save as PDF</button></div>';}
 function shopRow(f){var E=estimate(f.itemId),lv=flagLevel(f);
-  return '<div class="shop-row lv-'+lv+'" data-id="'+f.id+'" data-item="'+esc(f.itemId)+'" data-level="'+lv+'"><span class="box print-only">☐</span><div class="grow"><div class="sh-name">'+esc(f.name)+' <span class="lvl '+lv+'">'+LEVEL[lv]+'</span></div><div class="sh-meta">'+esc(f.category||'')+(f.byName?' · '+(f.auto?'':'flagged by ')+'<b>'+esc(f.byName)+'</b>':'')+(f.at?' · '+esc(flagWhen(f)):'')+'</div>'+
+  return '<div class="shop-row lv-'+lv+'" data-id="'+f.id+'" data-item="'+esc(f.itemId)+'" data-level="'+lv+'"><span class="box print-only">☐</span><div class="grow"><div class="sh-name">'+esc(f.name)+' <span class="lvl '+lv+'">'+LEVEL[lv]+'</span>'+dealTag(f.itemId)+'</div><div class="sh-meta">'+esc(f.category||'')+(f.byName?' · '+(f.auto?'':'flagged by ')+'<b>'+esc(f.byName)+'</b>':'')+(f.at?' · '+esc(flagWhen(f)):'')+'</div>'+
     (f.note?'<div class="sh-note">“'+esc(f.note)+'”</div>':'')+(E&&!E.needPack&&E.days!=null?'<div class="inv-est">'+esc(estText(E))+' <small>(estimate)</small></div>':'')+
     '<span class="no-print"><button class="link" data-action="flag-note" data-id="'+f.id+'">'+(f.note?'Edit note':'+ Add note')+'</button>'+(f.itemId.indexOf('req:')?' · <button class="link" data-action="stock-sheet" data-id="'+esc(f.itemId)+'">Change level</button>':'')+'</span></div>'+
     '<button class="btn primary gotit no-print" data-action="restock" data-id="'+f.id+'">Got it ✓</button></div>';}
 function renderShop(){if(ui.shopView==='inv')return '<div class="no-print">'+seg('shop-view',[{v:'list',l:'Shopping list'},{v:'inv',l:'Inventory'}],'inv')+'</div>'+renderInventory();
   var fl=sortedFlags(),h='<div class="no-print">'+seg('shop-view',[{v:'list',l:'Shopping list'},{v:'inv',l:'Inventory'}],'list')+'</div>';
+  h+=renderDealsCard();
   h+='<div class="print-only print-head"><h1>Shopping list</h1><p>'+esc(new Date().toLocaleDateString(undefined,{weekday:'long',month:'long',day:'numeric',year:'numeric'}))+'</p></div>';
   if(!fl.length)h+='<div class="empty no-print" id="shop-empty"><h2>Nothing to buy</h2><p>Tap <b>Low?</b> next to any item (here or on the Log screen) when it is running low or out.</p></div>';
   else{
@@ -1171,7 +1187,7 @@ function renderLogList(){
   return h;
 }
 function itemRow(key,name){
-  var l=draft.items[key],on=!!l,h='<div class="item'+(on?' on':'')+'"><div class="item-top"><button class="item-main" data-action="toggle-item" data-id="'+esc(key)+'" aria-pressed="'+on+'"><span class="check">'+(on?CHECK:'')+'</span><span class="name">'+esc(name)+'</span></button>'+(findItem(key)?lowBtn(key):'')+'</div>';
+  var l=draft.items[key],on=!!l,h='<div class="item'+(on?' on':'')+'"><div class="item-top"><button class="item-main" data-action="toggle-item" data-id="'+esc(key)+'" aria-pressed="'+on+'"><span class="check">'+(on?CHECK:'')+'</span>'+(function(t){return t?'<span class="nm-col"><span class="name">'+esc(name)+'</span>'+t+'</span>':'<span class="name">'+esc(name)+'</span>';})(findItem(key)?dealTag(key):'')+'</button>'+(findItem(key)?lowBtn(key):'')+'</div>';
   if(on){
     h+='<div class="ctrls"><div class="step"><button data-action="qty-dec" data-id="'+esc(key)+'" aria-label="One less">−</button><button class="q" data-action="qty-edit" data-id="'+esc(key)+'" aria-label="Quantity, tap to type">'+qtyNice(l.qty)+'</button><button data-action="qty-inc" data-id="'+esc(key)+'" aria-label="One more">+</button></div>';
     var hf=hasHalf(l.qty);
@@ -1455,6 +1471,50 @@ function renderSettings(){
   return h;
 }
 
+/* ---------- v1.6.0: store deals (filled by the daily deal scan, read-only here) ---------- */
+var DEALS_KEY='mealTracker.deals.v1';
+var deals=loadJSON(DEALS_KEY,null)||{hh:null,rows:[],at:0};
+var DEAL_COLS='id,retailer,store_id,store_name,item_name,food_name,food_id,match_re,sale_price,regular_price,price_text,deal_text,start_date,end_date,url,scanned_at';
+function dealNorm(s){return String(s||'').toLowerCase().replace(/[^a-z0-9]/g,'');}
+var DEAL_RE={};
+function dealRe(d){var k=d.match_re;if(!k)return null;if(!(k in DEAL_RE)){try{DEAL_RE[k]=new RegExp(k,'i');}catch(e){DEAL_RE[k]=null;}}return DEAL_RE[k];}
+function dealDay(s){return s?String(s).slice(0,10):'';}
+function dealLive(d,t){t=t||today();var e=dealDay(d.end_date);
+  if(e)return e>=t;return Date.now()-Date.parse(d.scanned_at||0)<3*864e5;}   // no end date: keep for 3 days after it was seen
+function dealStarted(d,t){var b=dealDay(d.start_date);return !b||b<=(t||today());}
+function currentDeals(){if(!deals||!deals.rows||(cloud.householdId&&deals.hh&&deals.hh!==cloud.householdId))return [];var t=today();
+  return deals.rows.filter(function(d){return dealLive(d,t);}).sort(function(a,b){
+    return (b.food_id?1:0)-(a.food_id?1:0)||(dealDay(a.end_date)||'9').localeCompare(dealDay(b.end_date)||'9')||String(a.item_name).localeCompare(String(b.item_name));});}
+function dealsFor(itemId){var it=findItem(itemId);if(!it)return [];var nm=dealNorm(it.item.name),t=today();
+  return currentDeals().filter(function(d){if(!dealStarted(d,t))return false;if(d.food_id&&d.food_id===itemId)return true;
+    var re=dealRe(d);if(re&&re.test(it.item.name))return true;return !!d.food_name&&dealNorm(d.food_name)===nm;});}
+function md(s){var d=parseYmd(dealDay(s));return d.toLocaleDateString(undefined,{month:'short',day:'numeric'});}
+function dealRange(d){var b=dealDay(d.start_date),e=dealDay(d.end_date);
+  if(b&&e)return b===e?md(b):md(b)+' – '+md(e);if(e)return 'until '+md(e);if(b)return 'from '+md(b);
+  return 'seen '+(d.scanned_at?new Date(d.scanned_at).toLocaleDateString(undefined,{month:'short',day:'numeric'}):'recently');}
+function dealPricesOK(){return !!db.settings.showCosts||isAdmin();}
+function dealTag(itemId){var L=dealsFor(itemId);if(!L.length)return '';var d=L[0],e=dealDay(d.end_date);
+  var tip=L.map(function(x){return x.retailer+(x.store_name?' '+x.store_name:'')+': '+x.item_name+' ('+dealRange(x)+')';}).join('\n');
+  return '<span class="deal-tag" data-deal="'+esc(d.id)+'" title="'+esc(tip)+'">🏷 '+(e?'Sale ends '+esc(shortDate(e)):'On sale')+(L.length>1?' · '+L.length+' deals':'')+'</span>';}
+function dealPrice(d){if(!dealPricesOK())return '';
+  var p=d.sale_price!=null?'$'+Number(d.sale_price).toFixed(2):'',r=d.regular_price!=null&&+d.regular_price>+d.sale_price?'<s>$'+Number(d.regular_price).toFixed(2)+'</s>':'';
+  var txt=[d.price_text,d.deal_text].filter(Boolean).join(' · ');
+  return (p||txt)?'<div class="deal-price">'+(p?esc(p):'')+r+(txt?(p?' · ':'')+esc(txt):'')+'</div>':'';}
+function renderDealsCard(){var L=currentDeals();if(!L.length)return '';var t=today();
+  var h='<section class="card pad no-print" id="deals-card"><h2>🏷 Deals <span class="muted">('+L.length+')</span></h2>';
+  L.forEach(function(d){var it=d.food_id&&findItem(d.food_id),soon=!dealStarted(d,t);
+    h+='<div class="deal-row" data-id="'+esc(d.id)+'"><div class="grow"><div class="deal-name">'+esc(d.item_name||d.food_name)+'</div>'+
+      '<div class="deal-when">'+(soon?'Starts ':'')+esc(dealRange(d))+'</div>'+dealPrice(d)+
+      '<div class="deal-meta">'+esc(d.retailer)+(d.store_name?' · '+esc(d.store_name):'')+(it?' · for <b>'+esc(it.item.name)+'</b>':'')+'</div></div>'+
+      (/^https:\/\//.test(d.url||'')?'<a href="'+esc(d.url)+'" target="_blank" rel="noopener">Open</a>':'')+'</div>';});
+  var at=deals.rows.reduce(function(m,d){var x=Date.parse(d.scanned_at||0)||0;return x>m?x:m;},0);
+  return h+(at?'<p class="hint" style="margin:6px 0 0">Checked '+esc(timeStr(at,true))+'. Prices can differ by store; Hy-Vee Perks prices need a Perks card.</p>':'')+'</section>';}
+function fetchDeals(hh){
+  return getAll('deals?household_id=eq.'+hh+'&deleted=is.false&select='+DEAL_COLS+'&order=id.asc').then(function(rows){return rows;},function(e){
+    if(e.status===404||e.code==='PGRST205'||e.code==='42P01'||e.code==='PGRST202')return [];throw e;}).then(function(rows){
+    var before=stable(deals.rows||[]);rows=(rows||[]).map(function(r){var x={};DEAL_COLS.split(',').forEach(function(k){x[k]=r[k]==null?null:r[k];});return x;});
+    deals={hh:hh,rows:rows,at:Date.now()};saveJSON(DEALS_KEY,deals);return before!==stable(rows);});}
+
 /* ---------- online database (Supabase via plain fetch) ---------- */
 var CLOUD_KEY='mealTracker.cloud.v1',SHADOW_KEY='mealTracker.shadow.v1',STASH_KEY='mealTracker.preCloud.v1';
 var TABLES={settings:'household_settings',profiles:'profiles',flags:'restock_flags',days:'daily_logs',restocks:'restock_events',categories:'categories',foods:'foods',meals:'meals'};
@@ -1641,7 +1701,8 @@ function doSync(){
     return hh;
   }).then(function(hh){
     if(cloud.awaitingUpload)return 'awaiting';
-    return push(hh).then(function(){return fetchServer(hh,false);}).then(function(res){return mergeServer(res);});
+    return push(hh).then(function(){return fetchServer(hh,false);}).then(function(res){var ch=mergeServer(res);
+      return fetchDeals(hh).then(function(dc){return ch||dc;},function(e){console.warn('deals not loaded',e);return ch;});});
   }).then(function(r){
     if(r==='awaiting'){setSync('awaiting');}
     else{cloud.lastSync=Date.now();saveCloud();setSync(pendingCount()?'offline':'ok');}
@@ -1988,7 +2049,7 @@ checkAutoLock();
 render();setTimeout(function(){if(!lockNeeded())autoFlag();},400);
 if(signedIn())syncNow();
 if(restoredDraft)setTimeout(function(){toast('Restored your unsaved meal');},300);
-window.__mealTracker={get db(){return db;},get draft(){return draft;},get cloud(){return cloud;},get sync(){return sync;},syncNow:syncNow,pendingCount:pendingCount,get dev(){return dev;},checkAutoLock:checkAutoLock,preparePrint:preparePrint,freqScores:freqScores,computeSnapshot:computeSnapshot,sha256hex:sha256hex,hashPin:hashPin,computeReport:computeReport};
+window.__mealTracker={get db(){return db;},get draft(){return draft;},get cloud(){return cloud;},get sync(){return sync;},syncNow:syncNow,pendingCount:pendingCount,get dev(){return dev;},checkAutoLock:checkAutoLock,preparePrint:preparePrint,freqScores:freqScores,computeSnapshot:computeSnapshot,sha256hex:sha256hex,hashPin:hashPin,computeReport:computeReport,get deals(){return deals;},currentDeals:currentDeals,dealsFor:dealsFor};
 })();
 </script>
 </body>
