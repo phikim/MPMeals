@@ -302,6 +302,24 @@ table.daily tfoot th{border-bottom:0;border-top:2px solid var(--ink)}
 .freq-tile.on{border-color:var(--pri);background:#f4faf8}
 .freq-tile.on .check{background:var(--pri);border-color:var(--pri)}
 .freq-tile .fq{color:var(--pri)}
+.combos{padding:12px 12px 14px;border:2px solid #e7d9b8;background:#fffcf3}
+.combo-list{display:flex;flex-direction:column;gap:10px}
+.combo-row{display:flex;gap:8px;align-items:stretch}
+.combo-tile{flex:1;display:flex;align-items:center;gap:12px;min-height:72px;border:2px solid var(--line);background:#fff;border-radius:14px;padding:10px 12px;text-align:left;font-size:1.1rem;font-weight:700;min-width:0}
+.combo-tile .cn-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.combo-tile .cp{font-size:.9rem;font-weight:500;color:var(--muted,#667)}
+.combo-tile .cplus{flex:none;font-size:1.6rem;color:var(--pri)}
+.combo-tile .fq{color:var(--pri)}
+.combo-row.on .combo-tile{border-color:var(--pri);background:#f4faf8}
+.combo-row.on .check{background:var(--pri);border-color:var(--pri)}
+.combo-minus{min-width:60px;font-size:1.6rem}
+#combo-editor input[type=text],#combo-editor select{width:100%;min-height:54px;font-size:1.1rem}
+#combo-editor select{margin-top:10px;border:2px dashed var(--pri);border-radius:12px;padding:0 10px;background:#fff}
+.ce-part{display:flex;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid var(--line)}
+.ce-part .grow{flex:1;min-width:0}
+.ce-part .qty{display:flex;align-items:center;gap:6px}
+.ce-part .q{min-width:52px;min-height:48px;font-size:1.15rem;font-weight:700;border:2px solid var(--line);border-radius:10px;background:#fff}
+.btn.danger{color:#b42318;border-color:#f1b5ae}
 .shop-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-top:1px solid var(--line)}
 .shop-row:first-child{border-top:0}
 .sh-name{font-size:1.25rem;font-weight:800}
@@ -436,7 +454,7 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 'use strict';
 var KEY='mealTracker.v1', DRAFT_KEY='mealTracker.draft.v1';
 var MEALS=['Breakfast','Lunch','Dinner','Snack','Other'];
-var APP_VERSION='1.6.0';
+var APP_VERSION='1.7.0';
 var ALL='Both';
 var SRC={home:'Home',dining:'Dining Room'};
 var CHECK='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -478,7 +496,7 @@ function parseNum(s){if(s==null)return null;s=String(s).replace(/[^0-9.,-]/g,'')
 
 /* ---------- data ---------- */
 function starterCategories(){return STARTER.map(function(c){return {id:uid(),name:c[0],items:c[1].map(function(n){return {id:uid(),name:n,cost:{home:null,dining:null}};})};});}
-function freshDB(){return {version:1,settings:{showCosts:false,people:['Mom','Dad'],currency:'$',weekStart:0,itemSort:'frequent',trackers:defaultTrackers(),showDaily:false,autoLow:true,autoLowDays:3},categories:starterCategories(),meals:[],profiles:[],flags:[],days:[],restocks:[]};}
+function freshDB(){return {version:1,settings:{showCosts:false,people:['Mom','Dad'],currency:'$',weekStart:0,itemSort:'frequent',trackers:defaultTrackers(),showDaily:false,autoLow:true,autoLowDays:3},categories:starterCategories(),meals:[],profiles:[],flags:[],days:[],restocks:[],combos:[]};}
 function normalize(d){
   var f=freshDB(); d=(d&&typeof d==='object')?d:{};
   d.settings=Object.assign({},f.settings,d.settings||{});
@@ -500,15 +518,55 @@ function normalize(d){
   d.settings.showDaily=!!d.settings.showDaily;d.settings.autoLow=d.settings.autoLow!==false;d.settings.autoLowDays=isNum(+d.settings.autoLowDays)?Math.max(0,Math.round(+d.settings.autoLowDays)):3;
   d.settings.trackers=normTrackers(d.settings.trackers)||defaultTrackers();
   if(!Array.isArray(d.days))d.days=[];
+  d.combos=(Array.isArray(d.combos)?d.combos:[]).filter(function(c){return c&&c.id;}).map(normCombo);
   d.days=d.days.filter(function(x){return x&&/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||x.id||''));}).map(function(x){var k=String(x.date||x.id);return {id:k,date:k,counts:objNum(x.counts),notes:objStr(x.notes),requests:String(x.requests||''),note:String(x.note||''),by:x.by||null,byName:x.byName||null,at:isNum(x.at)?x.at:null};});
   if(['frequent','az','manual'].indexOf(d.settings.itemSort)<0)d.settings.itemSort='frequent';
   d.meals.forEach(function(m){m.id=m.id||uid();m.items=Array.isArray(m.items)?m.items:[];m.person=m.person||ALL;
     m.items.forEach(function(e){e.qty=isNum(+e.qty)?+e.qty:1;e.source=e.source==='dining'?'dining':'home';if(!isNum(e.unitCost))e.unitCost=null;});});
   d.version=1; return d;}
+/* ---------- v1.7.0: combos (one tap logs several items; each part still counts on its own) ---------- */
+function normParts(a){return (Array.isArray(a)?a:[]).filter(function(x){return x&&x.itemId&&isFinite(+x.qty)&&+x.qty>0;}).map(function(x){return {itemId:String(x.itemId),qty:round2(+x.qty)};});}
+function normMeals(a){return (Array.isArray(a)?a:[]).filter(function(m){return MEALS.indexOf(m)>=0;});}
+function normCombo(c){return {id:String(c.id),name:String(c.name||'Combo'),meals:normMeals(c.meals),source:c.source==='home'||c.source==='dining'?c.source:'',parts:normParts(c.parts)};}
+function comboById(id){return (db.combos||[]).find(function(c){return c.id===id;})||null;}
+function comboFits(c,meal){return !c.meals.length||c.meals.indexOf(meal)>=0;}
+function comboPartsText(c){return c.parts.map(function(x){var f=findItem(x.itemId);return qtyNice(x.qty)+' '+(f?f.item.name:'(deleted item)');}).join(' + ');}
+function renderCombos(){if(ui.search.trim())return '';var L=(db.combos||[]).filter(function(c){return comboFits(c,draft.meal)&&c.parts.length;});if(!L.length)return '';
+  var cnt=draft.combos||{};
+  return '<section class="card combos" id="combos-card"><h3 class="freq-h">🍽 Combos for '+esc(draft.meal==='Other'?'Other / household':draft.meal)+' <span class="muted">one tap adds every part</span></h3><div class="combo-list">'+L.map(function(c){var n=cnt[c.id]||0;
+    return '<div class="combo-row'+(n?' on':'')+'"><button class="combo-tile" data-action="combo-add" data-id="'+esc(c.id)+'" aria-label="Add combo '+esc(c.name)+'"><span class="check">'+(n?CHECK:'')+'</span><span class="cn-col"><span class="cn">'+esc(c.name)+(n>1?' <b class="fq">×'+n+'</b>':'')+'</span><span class="cp">'+esc(comboPartsText(c))+(c.source?' · '+SRC[c.source]:'')+'</span></span><span class="cplus">＋</span></button>'+(n?'<button class="iconbtn combo-minus" data-action="combo-remove" data-id="'+esc(c.id)+'" aria-label="Take one '+esc(c.name)+' back out">−</button>':'')+'</div>';}).join('')+'</div>'+(Object.keys(cnt).some(function(k){return cnt[k];})?'<p class="hint" style="margin:8px 2px 0">Each part is now checked below — change or uncheck any of them there.</p>':'')+'</section>';}
+function comboAdd(id,sign){var c=comboById(id);if(!c)return;draft.combos=draft.combos||{};var n=draft.combos[id]||0;if(sign<0&&!n)return;var miss=0;
+  c.parts.forEach(function(x){var f=findItem(x.itemId);if(!f){miss++;return;}var k=x.itemId,l=draft.items[k];
+    if(sign<0){if(!l)return;var q=round2(l.qty-x.qty);if(q<=0)delete draft.items[k];else{l.qty=q;l.auto=false;}return;}
+    var hh=isHHItem(k),src=hh?'home':(c.source||draft.defaultSource);
+    if(l){l.qty=round2(l.qty+x.qty);l.auto=false;}
+    else draft.items[k]={itemId:k,qty:x.qty,auto:false,source:src,srcPicked:!hh&&src!==draft.defaultSource,unitCost:null,name:f.item.name,category:f.cat.name};});
+  draft.combos[id]=n+(sign<0?-1:1);if(!draft.combos[id])delete draft.combos[id];
+  refreshLogParts();toast(sign<0?'Took out '+c.name:'Added '+c.name+(miss?' ('+miss+' part'+(miss===1?' is':'s are')+' no longer on the item list)':''));}
+/* admin editor */
+function itemOptions(){return db.categories.map(function(c){return c.items.length?'<optgroup label="'+esc(c.name)+'">'+c.items.map(function(i){return '<option value="'+esc(i.id)+'">'+esc(i.name)+'</option>';}).join('')+'</optgroup>':'';}).join('');}
+function renderComboSection(){var L=db.combos||[],h='<h2 class="sec-title" id="combos-sec">Combos</h2><section class="card">';
+  if(signedIn()&&cloud.noCombos)h+='<p class="hint" style="margin:10px 14px;color:#a33">The online database does not have combos yet, so combos stay on this device. Run the newest supabase-setup.sql (see SETUP.md).</p>';
+  if(!L.length)h+='<p class="muted" style="margin:12px 14px">No combos yet. A combo logs several items with one tap, e.g. “English Muffin Halves”.</p>';
+  L.forEach(function(c,i){h+='<div class="set-row combo-adm"><div class="grow"><div class="set-title">'+esc(c.name)+'</div><div class="muted" style="font-size:.88rem">'+(c.meals.length?c.meals.join(', '):'Every meal')+(c.source?' · '+SRC[c.source]:'')+'<br>'+esc(comboPartsText(c)||'No items yet')+'</div></div><button class="iconbtn" data-action="combo-up" data-id="'+esc(c.id)+'" aria-label="Move up"'+(i===0?' disabled':'')+'>↑</button><button class="btn" data-action="combo-edit" data-id="'+esc(c.id)+'">Edit</button></div>';});
+  h+='<div class="set-row"><button class="btn block" data-action="combo-new">+ Add a combo</button></div></section>';
+  return h;}
+function renderComboEditor(){var e=ui.comboEdit,h='<section class="card pad" id="combo-editor"><h2 style="margin-top:0">'+(e.isNew?'New combo':'Edit combo')+'</h2>';
+  h+='<div class="lbl">Name</div><input type="text" id="ce-name" value="'+esc(e.name)+'" placeholder="e.g. English Muffin Halves" autocomplete="off">';
+  h+='<div class="lbl">Shows up for</div><div class="seg grid4 ce-meals">'+MEALS.map(function(m){var on=e.meals.indexOf(m)>=0;return '<button data-action="ce-meal" data-v="'+m+'" class="'+(on?'on':'')+'" aria-pressed="'+on+'">'+esc(m==='Other'?'Other / household':m)+'</button>';}).join('')+'</div><p class="hint">Pick none to show it for every meal.</p>';
+  h+='<div class="lbl">Came from</div>'+seg('ce-src',[{v:'',l:'As picked when logging'},{v:'home',l:'Home',cls:'home'},{v:'dining',l:'Dining Room',cls:'dining'}],e.source,'src');
+  h+='<div class="lbl">Items in this combo</div>';
+  if(!e.parts.length)h+='<p class="muted">Add the items below.</p>';
+  e.parts.forEach(function(x,i){var f=findItem(x.itemId);h+='<div class="ce-part"><div class="grow"><b>'+esc(f?f.item.name:'(deleted item)')+'</b>'+(f?'<div class="muted" style="font-size:.85rem">'+esc(f.cat.name)+'</div>':'')+'</div><div class="qty"><button class="iconbtn" data-action="ce-qty" data-i="'+i+'" data-d="-0.5" aria-label="Less">−</button><button class="q" data-action="ce-qty-edit" data-i="'+i+'" aria-label="Amount">'+qtyNice(x.qty)+'</button><button class="iconbtn" data-action="ce-qty" data-i="'+i+'" data-d="0.5" aria-label="More">+</button></div><button class="iconbtn danger" data-action="ce-del-part" data-i="'+i+'" aria-label="Remove '+esc(f?f.item.name:'item')+'">×</button></div>';});
+  h+='<select id="ce-add" aria-label="Add an item to the combo"><option value="">+ Add an item…</option>'+itemOptions()+'</select>';
+  h+='<p class="hint">Amounts are for the whole combo (½ = half a serving). When logged, each item counts on its own for stock, costs and reports.</p>';
+  h+='<div class="btn-row" style="margin-top:14px"><button class="btn primary" data-action="ce-save">Save combo</button><button class="btn" data-action="ce-cancel">Cancel</button></div>';
+  if(!e.isNew)h+='<button class="btn block danger" style="margin-top:12px" data-action="ce-delete">Delete this combo</button>';
+  return h+'</section>';}
 function load(){try{var raw=localStorage.getItem(KEY);if(raw)return normalize(JSON.parse(raw));}catch(e){console.warn('load failed',e);}return normalize(freshDB());}
 function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(db));}catch(e){toast('Could not save on this device (storage unavailable)');}}
 function save(){saveLocal();if(typeof scheduleSync==='function')scheduleSync();}
-function newDraft(keep){keep=keep||{};return {editingId:null,date:keep.date||today(),meal:defaultMeal(),person:keep.person||ALL,defaultSource:keep.defaultSource||'home',notes:'',items:{}};}
+function newDraft(keep){keep=keep||{};return {editingId:null,date:keep.date||today(),meal:defaultMeal(),person:keep.person||ALL,defaultSource:keep.defaultSource||'home',notes:'',items:{},combos:{}};}
 function saveDraft(){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(draft));}catch(e){}}
 function loadDraft(){
   try{var d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');
@@ -1153,6 +1211,7 @@ function renderLog(){
   h+='<p class="hint">Items you check start at <b>'+qtyNice(defaultQty(d.person))+'</b> serving'+(defaultQty(d.person)===1?'':'s')+' and are marked <b>'+SRC[d.defaultSource]+'</b>. '+(d.editingId?'Changing this sets every item in the meal.':'Changing this also moves items already checked.')+' You can still change any single item below.'+(diff?' <button class="link" data-action="apply-src-all">Mark all checked as '+SRC[d.defaultSource]+'</button>':'')+'</p>';
   h+='</section>';
   h+='<div class="search"><input type="text" id="f-search" placeholder="Find an item…" value="'+esc(ui.search)+'" autocomplete="off" aria-label="Find an item">'+(ui.search?'<button class="x" data-action="clear-search" aria-label="Clear search">×</button>':'')+'</div>';
+  h+='<div id="combos">'+renderCombos()+'</div>';
   h+='<div id="freq">'+renderFrequent()+'</div>';
   h+='<div class="chips" id="chips">'+renderChips()+'</div>';
   h+='<div class="expand-row" id="expand-row">'+renderExpandRow()+'</div>';
@@ -1219,6 +1278,7 @@ function refreshLogParts(){ // update list without losing scroll/focus
   var ch=$('#chips');if(ch)ch.innerHTML=renderChips();
   var er=$('#expand-row');if(er)er.innerHTML=renderExpandRow();
   var fq=$('#freq');if(fq)fq.innerHTML=renderFrequent();
+  var cb=$('#combos');if(cb)cb.innerHTML=renderCombos();
   renderSavebar(); saveDraft();
 }
 
@@ -1412,6 +1472,7 @@ function reportCSV(){
 
 /* settings */
 function renderSettings(){
+  if(ui.comboEdit&&isAdmin())return renderComboEditor();
   var s=db.settings,h='',u=currentUser(),admin=isAdmin();
   h+='<h2 class="sec-title">You</h2><section class="card pad"><div style="display:flex;align-items:center;gap:12px">'+avatar(u)+'<div style="flex:1;min-width:0"><div class="set-title">'+esc(u?u.name:'')+'</div><span class="role'+(admin?' admin':'')+'">'+(admin?'Admin':'Member')+'</span></div></div>';
   h+='<div class="btn-row"><button class="btn" data-action="switch-user">Switch user</button><button class="btn" data-action="change-my-pin">Change my PIN</button></div></section>';
@@ -1460,6 +1521,7 @@ function renderSettings(){
     h+='</section>';
   });
   h+='<button class="btn block" data-action="add-cat">+ Add a category</button>';
+  h+=renderComboSection();
 
   h+=renderCloud();
   h+='<h2 class="sec-title">Your data</h2><section class="card pad">';
@@ -1517,7 +1579,7 @@ function fetchDeals(hh){
 
 /* ---------- online database (Supabase via plain fetch) ---------- */
 var CLOUD_KEY='mealTracker.cloud.v1',SHADOW_KEY='mealTracker.shadow.v1',STASH_KEY='mealTracker.preCloud.v1';
-var TABLES={settings:'household_settings',profiles:'profiles',flags:'restock_flags',days:'daily_logs',restocks:'restock_events',categories:'categories',foods:'foods',meals:'meals'};
+var TABLES={combos:'combos',settings:'household_settings',profiles:'profiles',flags:'restock_flags',days:'daily_logs',restocks:'restock_events',categories:'categories',foods:'foods',meals:'meals'};
 function loadJSON(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
 function saveJSON(k,v){try{if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 var cloud=loadJSON(CLOUD_KEY,{})||{};
@@ -1541,9 +1603,11 @@ function strOrNull(v){return v==null||v===''?null:String(v);}
 function recMeal(m){return {id:m.id,date:m.date,meal:m.meal,person:m.person||ALL,notes:m.notes||'',items:normItems(m.items),created_ms:isNum(m.createdAt)?m.createdAt:null,
   entered_by:strOrNull(m.enteredBy),entered_by_name:strOrNull(m.enteredByName),edited_by:strOrNull(m.editedBy),edited_by_name:strOrNull(m.editedByName),edited_ms:isNum(m.editedAt)?m.editedAt:null};}
 function recProfile(p){return {id:p.id,name:p.name,role:p.role==='admin'?'admin':'member',pin_salt:p.salt||null,pin_hash:p.pinHash||null,created_ms:isNum(p.createdAt)?p.createdAt:null};}
+function recCombo(c,i){return {id:c.id,name:c.name,meals:normMeals(c.meals),source:c.source||'',parts:normParts(c.parts),sort_order:i};}
 function flatten(d){var r={'settings:main':recSettings(d.settings)};
   d.categories.forEach(function(c,i){r['categories:'+c.id]={id:c.id,name:c.name,sort_order:i,household:!!c.household};
     c.items.forEach(function(f,j){r['foods:'+f.id]={id:f.id,category_id:c.id,name:f.name,price_home:numOrNull(f.cost.home),price_dining:numOrNull(f.cost.dining),sort_order:j,pack_size:numOrNull(f.packSize),restock_unit:f.unit||''};});});
+  (d.combos||[]).forEach(function(c,i){r['combos:'+c.id]=recCombo(c,i);});
   (d.restocks||[]).forEach(function(x){r['restocks:'+x.id]=recRestock(x);});
   d.meals.forEach(function(m){r['meals:'+m.id]=recMeal(m);});
   (d.profiles||[]).forEach(function(p){r['profiles:'+p.id]=recProfile(p);});
@@ -1551,21 +1615,22 @@ function flatten(d){var r={'settings:main':recSettings(d.settings)};
   (d.days||[]).forEach(function(x){r['days:'+x.id]=recDay(x);});
   return r;}
 function unflatten(recs){
-  var s=recs['settings:main']||recSettings(freshDB().settings),cats=[],foods=[],meals=[],profs=[],flags=[],days=[],rsts=[];
-  Object.keys(recs).forEach(function(k){var t=k.slice(0,k.indexOf(':'));if(t==='categories')cats.push(recs[k]);else if(t==='foods')foods.push(recs[k]);else if(t==='meals')meals.push(recs[k]);else if(t==='profiles')profs.push(recs[k]);else if(t==='flags')flags.push(recs[k]);else if(t==='days')days.push(recs[k]);else if(t==='restocks')rsts.push(recs[k]);});
+  var s=recs['settings:main']||recSettings(freshDB().settings),cats=[],foods=[],meals=[],profs=[],flags=[],days=[],rsts=[],cmbs=[];
+  Object.keys(recs).forEach(function(k){var t=k.slice(0,k.indexOf(':'));if(t==='categories')cats.push(recs[k]);else if(t==='foods')foods.push(recs[k]);else if(t==='meals')meals.push(recs[k]);else if(t==='profiles')profs.push(recs[k]);else if(t==='flags')flags.push(recs[k]);else if(t==='days')days.push(recs[k]);else if(t==='restocks')rsts.push(recs[k]);else if(t==='combos')cmbs.push(recs[k]);});
   profs.sort(function(a,b){return (a.created_ms||0)-(b.created_ms||0)||(a.id<b.id?-1:1);});
   var ord=function(a,b){return (a.sort_order-b.sort_order)||(a.id<b.id?-1:a.id>b.id?1:0);};
-  cats.sort(ord);foods.sort(ord);
+  cats.sort(ord);foods.sort(ord);cmbs.sort(ord);
   var byId={},out=cats.map(function(c){var x={id:c.id,name:c.name,household:!!c.household,items:[]};byId[c.id]=x;return x;});
   foods.forEach(function(f){var c=byId[f.category_id];
     if(!c){c=out.filter(function(x){return x.name.toLowerCase()==='other';})[0]||out[out.length-1];if(!c){c={id:uid(),name:'Other',items:[]};out.push(c);byId[c.id]=c;}}
     c.items.push({id:f.id,name:f.name,cost:{home:f.price_home,dining:f.price_dining},packSize:f.pack_size,unit:f.restock_unit||''});});
-  return normalize({version:1,settings:{people:s.people,showCosts:s.show_costs,currency:s.currency,weekStart:s.week_start,itemSort:s.item_sort||'frequent',trackers:s.trackers,showDaily:s.show_daily,autoLow:s.auto_low,autoLowDays:s.auto_low_days},categories:out,days:days.map(dayFromRec),restocks:rsts.map(restockFromRec),
+  return normalize({version:1,settings:{people:s.people,showCosts:s.show_costs,currency:s.currency,weekStart:s.week_start,itemSort:s.item_sort||'frequent',trackers:s.trackers,showDaily:s.show_daily,autoLow:s.auto_low,autoLowDays:s.auto_low_days},categories:out,days:days.map(dayFromRec),restocks:rsts.map(restockFromRec),combos:cmbs,
     flags:flags.sort(function(a,b){return (a.flagged_ms||0)-(b.flagged_ms||0);}).map(function(f){return {id:f.id,itemId:f.item_id,name:f.item_name,category:f.category,note:f.note,by:f.flagged_by,byName:f.flagged_by_name,at:f.flagged_ms,level:f.level,auto:f.auto};}),
     profiles:profs.map(function(p){return {id:p.id,name:p.name,role:p.role,salt:p.pin_salt,pinHash:p.pin_hash,createdAt:p.created_ms==null?0:p.created_ms};}),
     meals:meals.map(function(m){var x={id:m.id,date:m.date,meal:m.meal,person:m.person,notes:m.notes,items:normItems(m.items),createdAt:m.created_ms==null?0:m.created_ms};
       if(m.entered_by!=null)x.enteredBy=m.entered_by;if(m.entered_by_name!=null)x.enteredByName=m.entered_by_name;if(m.edited_by!=null)x.editedBy=m.edited_by;if(m.edited_by_name!=null)x.editedByName=m.edited_by_name;if(m.edited_ms!=null)x.editedAt=m.edited_ms;return x;})});}
 function rowToRec(t,r){
+  if(t==='combos')return {id:r.id,name:r.name||'',meals:normMeals(r.meals),source:r.source==='home'||r.source==='dining'?r.source:'',parts:normParts(r.parts),sort_order:+r.sort_order||0};
   if(t==='settings')return {people:Array.isArray(r.people)?r.people:[],show_costs:!!r.show_costs,currency:r.currency||'$',week_start:+r.week_start||0,item_sort:r.item_sort||'frequent',trackers:normTrackers(r.trackers)||defaultTrackers(),show_daily:!!r.show_daily,auto_low:r.auto_low!==false,auto_low_days:r.auto_low_days==null?3:Math.round(+r.auto_low_days)};
   if(t==='restocks')return {id:r.id,item_id:r.item_id,item_name:r.item_name||'',date:String(r.date).slice(0,10),at_ms:r.at_ms==null?null:Number(r.at_ms),qty:numOrNull(r.qty),unit:r.unit||'',cost:numOrNull(r.cost),by_id:strOrNull(r.by_id),by_name:strOrNull(r.by_name),auto_flagged:!!r.auto_flagged};
   if(t==='days')return {id:r.id,date:String(r.date).slice(0,10),counts:objNum(r.counts),notes:objStr(r.notes),requests:r.requests||'',day_note:r.day_note||'',updated_by_name:strOrNull(r.updated_by_name),edited_by:strOrNull(r.edited_by),edited_ms:r.edited_ms==null?null:Number(r.edited_ms)};
@@ -1578,7 +1643,7 @@ function rowToRec(t,r){
 function dirtyKeys(cur){var recs=(shadow&&shadow.recs)||{},seen={},out=[];
   Object.keys(cur).concat(Object.keys(recs)).forEach(function(k){if(seen[k])return;seen[k]=1;if((cur[k]?stable(cur[k]):null)!==(recs[k]||null))out.push(k);});
   return out;}
-function pendingCount(){if(!signedIn()||!shadow||shadow.hh!==cloud.householdId||cloud.awaitingUpload)return 0;return dirtyKeys(flatten(db)).length;}
+function pendingCount(){if(!signedIn()||!shadow||shadow.hh!==cloud.householdId||cloud.awaitingUpload)return 0;return dirtyKeys(flatten(db)).filter(function(k){return !(cloud.noCombos&&k.indexOf('combos:')===0);}).length;}
 function looksUsed(d){if(d.meals.length)return true;
   var names=d.categories.map(function(c){return c.name+':'+c.items.map(function(i){return i.name;}).join(',');}).join('|');
   var start=STARTER.map(function(c){return c[0]+':'+c[1].join(',');}).join('|');
@@ -1621,9 +1686,10 @@ function inList(ids){return encodeURIComponent('('+ids.map(function(i){return '"
 function push(hh){
   var cur=flatten(db),keys=dirtyKeys(cur);if(!keys.length)return Promise.resolve(0);
   var ups={},dels={};
+  if(cloud.noCombos)keys=keys.filter(function(k){return k.indexOf('combos:')!==0;});
   keys.forEach(function(k){var t=k.slice(0,k.indexOf(':'));if(cur[k])(ups[t]=ups[t]||[]).push(k);else if(t!=='settings')(dels[t]=dels[t]||[]).push(k);});
   var steps=[];
-  ['settings','profiles','categories','foods','flags','days','restocks','meals'].forEach(function(t){
+  ['settings','profiles','categories','foods','combos','flags','days','restocks','meals'].forEach(function(t){
     var ks=ups[t]||[];for(var i=0;i<ks.length;i+=200)(function(chunk){steps.push(function(){
       var rows=chunk.map(function(k){var r=Object.assign({household_id:hh},cur[k]);if(t!=='settings')r.deleted=false;return r;});
       return api('POST',TABLES[t]+'?on_conflict='+(t==='settings'?'household_id':'household_id,id'),rows,{'Prefer':'resolution=merge-duplicates,return=minimal'})
@@ -1647,6 +1713,7 @@ function fetchServer(hh,full){
     return getAll('restock_flags?household_id=eq.'+hh+'&deleted=is.false&select=id,item_id,item_name,category,note,flagged_by,flagged_by_name,flagged_ms,level,auto&order=id.asc');}).then(function(r){res.flags=r;
     return getAll('restock_events?household_id=eq.'+hh+'&deleted=is.false&select=id,item_id,item_name,date,at_ms,qty,unit,cost,by_id,by_name,auto_flagged&order=id.asc');}).then(function(r){res.restocks=r;
     return getAll('daily_logs?household_id=eq.'+hh+'&deleted=is.false&select=id,date,counts,notes,requests,day_note,updated_by_name,edited_by,edited_ms&order=id.asc');}).then(function(r){res.days=r;
+    return getAll('combos?household_id=eq.'+hh+'&deleted=is.false&select=id,name,meals,source,parts,sort_order&order=id.asc').then(function(c){cloud.noCombos=false;return c;},function(e){if(e.status===404||e.code==='PGRST205'||e.code==='42P01'||e.code==='PGRST204'||e.code==='42703'){cloud.noCombos=true;return null;}throw e;});}).then(function(r){res.combos=r;
     return getAll(mq);}).then(function(r){res.meals=r;res.full=full||!cloud.cursor;return res;});}
 function mergeServer(res){
   var cur=flatten(db),recs=shadow.recs,changed=false,serverKeys={};
@@ -1661,17 +1728,18 @@ function mergeServer(res){
   res.flags.forEach(function(r){serverKeys['flags:'+r.id]=1;apply('flags:'+r.id,rowToRec('flags',r));});
   (res.days||[]).forEach(function(r){serverKeys['days:'+r.id]=1;apply('days:'+r.id,rowToRec('days',r));});
   (res.restocks||[]).forEach(function(r){serverKeys['restocks:'+r.id]=1;apply('restocks:'+r.id,rowToRec('restocks',r));});
+  (res.combos||[]).forEach(function(r){serverKeys['combos:'+r.id]=1;apply('combos:'+r.id,rowToRec('combos',r));});
   res.meals.forEach(function(r){serverKeys['meals:'+r.id]=1;apply('meals:'+r.id,r.deleted?null:rowToRec('meals',r));
     if(!cloud.cursor||Date.parse(r.updated_at)>Date.parse(cloud.cursor))cloud.cursor=r.updated_at;});
   Object.keys(cur).forEach(function(k){var t=k.slice(0,k.indexOf(':'));
-    if((t==='categories'||t==='foods'||t==='profiles'||t==='flags'||t==='days'||t==='restocks'||(t==='meals'&&res.full))&&!serverKeys[k])apply(k,null);});
+    if((t==='categories'||t==='foods'||t==='profiles'||t==='flags'||t==='days'||t==='restocks'||(t==='combos'&&res.combos)||(t==='meals'&&res.full))&&!serverKeys[k])apply(k,null);});
   if(changed){db=unflatten(cur);saveLocal();reindex();setTimeout(autoFlag,0);}
   saveShadow();saveCloud();
   return changed;}
 
 function linkHousehold(hh){
   return fetchServer(hh,true).then(function(res){
-    var empty=!res.settings.length&&!res.categories.length&&!res.foods.length&&!res.meals.length&&!res.profiles.length&&!res.flags.length&&!res.days.length&&!res.restocks.length;
+    var empty=!res.settings.length&&!res.categories.length&&!res.foods.length&&!res.meals.length&&!res.profiles.length&&!res.flags.length&&!res.days.length&&!res.restocks.length&&!(res.combos&&res.combos.length);
     cloud.cursor=null;
     if(empty){cloud.awaitingUpload=true;shadow={hh:hh,recs:{}};saveShadow();saveCloud();return 'empty';}
     if(looksUsed(db))saveJSON(STASH_KEY,{savedAt:Date.now(),db:db});
@@ -1681,6 +1749,7 @@ function linkHousehold(hh){
     res.foods.forEach(function(r){recs['foods:'+r.id]=rowToRec('foods',r);});
     res.profiles.forEach(function(r){recs['profiles:'+r.id]=rowToRec('profiles',r);});
     res.flags.forEach(function(r){recs['flags:'+r.id]=rowToRec('flags',r);});
+    (res.combos||[]).forEach(function(r){recs['combos:'+r.id]=rowToRec('combos',r);});
     res.meals.forEach(function(r){recs['meals:'+r.id]=rowToRec('meals',r);if(!cloud.cursor||Date.parse(r.updated_at)>Date.parse(cloud.cursor))cloud.cursor=r.updated_at;});
     Object.keys(recs).forEach(function(k){sh[k]=stable(recs[k]);});
     db=unflatten(recs);saveLocal();reindex();
@@ -1949,6 +2018,23 @@ function importJSON(file){
 }
 
 var actions={
+  'combo-add':function(el){comboAdd(el.dataset.id,1);},
+  'combo-remove':function(el){comboAdd(el.dataset.id,-1);},
+  'combo-new':function(){if(!needAdmin())return;ui.comboEdit={isNew:true,id:uid(),name:'',meals:[draft.meal],source:'',parts:[]};render();window.scrollTo(0,0);},
+  'combo-edit':function(el){if(!needAdmin())return;var c=comboById(el.dataset.id);if(!c)return;ui.comboEdit=JSON.parse(JSON.stringify(c));ui.comboEdit.isNew=false;render();window.scrollTo(0,0);},
+  'combo-up':function(el){if(!needAdmin())return;var L=db.combos,i=L.findIndex(function(c){return c.id===el.dataset.id;});if(i>0){var t=L[i-1];L[i-1]=L[i];L[i]=t;save();render();}},
+  'ce-meal':function(el){var e=ui.comboEdit,m=el.dataset.v,i=e.meals.indexOf(m);if(i>=0)e.meals.splice(i,1);else e.meals.push(m);e.meals=MEALS.filter(function(x){return e.meals.indexOf(x)>=0;});render();},
+  'ce-src':function(el){ui.comboEdit.source=el.dataset.v;render();},
+  'ce-qty':function(el){var x=ui.comboEdit.parts[+el.dataset.i];if(!x)return;var q=round2(x.qty+(+el.dataset.d));if(q<=0){toast('Use × to remove an item');return;}x.qty=q;render();},
+  'ce-qty-edit':function(el){var x=ui.comboEdit.parts[+el.dataset.i];if(!x)return;askNumber('How many?',fmtQty(x.qty),'Use decimals for part portions, e.g. 0.5 or 1.5').then(function(n){if(n==null||n<=0)return;x.qty=round2(n);render();});},
+  'ce-del-part':function(el){ui.comboEdit.parts.splice(+el.dataset.i,1);render();},
+  'ce-cancel':function(){ui.comboEdit=null;render();var s=document.getElementById('combos-sec');if(s)s.scrollIntoView();},
+  'ce-save':function(){if(!needAdmin())return;var e=ui.comboEdit,nm=String(($('#ce-name')||{}).value||e.name||'').trim();
+    if(!nm){toast('Please give the combo a name');return;}if(!e.parts.length){toast('Add at least one item');return;}
+    if(db.combos.some(function(c){return c.id!==e.id&&c.name.trim().toLowerCase()===nm.toLowerCase();})){toast('There is already a combo with that name');return;}
+    var c=normCombo({id:e.id,name:nm,meals:e.meals,source:e.source,parts:e.parts}),i=db.combos.findIndex(function(x){return x.id===c.id;});
+    if(i>=0)db.combos[i]=c;else db.combos.push(c);ui.comboEdit=null;save();render();toast('Combo saved ✓');var s=document.getElementById('combos-sec');if(s)s.scrollIntoView();},
+  'ce-delete':function(){if(!needAdmin())return;var e=ui.comboEdit;confirmBox('Delete '+(e.name||'this combo')+'?','Meals already logged keep their items.','Delete',true).then(function(ok){if(!ok)return;db.combos=db.combos.filter(function(c){return c.id!==e.id;});ui.comboEdit=null;save();render();toast('Combo deleted');});},
   'tab':function(el){setTab(el.dataset.v);},
   'set-meal':function(el){draft.meal=el.dataset.v;saveDraft();render();},
   'set-person':function(el){var od=defaultQty(draft.person),nd=defaultQty(el.dataset.v);draft.person=el.dataset.v;
@@ -2013,12 +2099,14 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&modalResolv
 document.addEventListener('input',function(e){var t=e.target;
   if(t.id==='shop-search'){ui.shopQ=t.value;var sp=$('#shop-pick');if(sp)sp.innerHTML=renderShopPick();return;}
   if(t.id==='f-search'){ui.search=t.value;var ll=$('#log-list');if(ll)ll.innerHTML=renderLogList();var sx=document.querySelector('.search .x');if(!!ui.search!==!!sx){var wrap=t.parentNode;if(ui.search&&!sx){wrap.insertAdjacentHTML('beforeend','<button class="x" data-action="clear-search" aria-label="Clear search">×</button>');}else if(sx)sx.remove();}}
+  else if(t.id==='ce-name'&&ui.comboEdit){ui.comboEdit.name=t.value;}
   else if(t.id==='f-notes'){draft.notes=t.value;saveDraft();if(draft.editingId)renderSavebar();}});
 document.addEventListener('change',function(e){var t=e.target,v=t.value;
   if(t.id==='f-date'){if(v){draft.date=v;saveDraft();renderSavebar();}else t.value=draft.date;return;}
   if(t.id==='s-from'||t.id==='s-to'){if(!v)return;ui.sum.preset='custom';ui.sum[t.id==='s-from'?'from':'to']=v;render();return;}
   if(t.id==='s-logger'){ui.sum.logger=v;render();return;}
   if(t.id==='restore-file'){if(t.files&&t.files[0])importJSON(t.files[0]);return;}
+  if(t.id==='ce-add'){if(v&&ui.comboEdit){var ex=ui.comboEdit.parts.find(function(x){return x.itemId===v;});if(ex)ex.qty=round2(ex.qty+1);else ui.comboEdit.parts.push({itemId:v,qty:1});render();}return;}
   if(t.id==='dday-date'){if(v){ui.dday=v;render();}return;}
   var a=t.dataset.change;if(!a)return;
   if(a==='trk-note'||a==='day-req'||a==='day-note'){var dd=ensureDay(ui.dday||today());if(a==='trk-note')dd.notes[t.dataset.k]=v.trim();else if(a==='day-req')dd.requests=v.trim();else dd.note=v.trim();touchDay(dd);save();toast('Saved');return;}
@@ -2049,7 +2137,7 @@ checkAutoLock();
 render();setTimeout(function(){if(!lockNeeded())autoFlag();},400);
 if(signedIn())syncNow();
 if(restoredDraft)setTimeout(function(){toast('Restored your unsaved meal');},300);
-window.__mealTracker={get db(){return db;},get draft(){return draft;},get cloud(){return cloud;},get sync(){return sync;},syncNow:syncNow,pendingCount:pendingCount,get dev(){return dev;},checkAutoLock:checkAutoLock,preparePrint:preparePrint,freqScores:freqScores,computeSnapshot:computeSnapshot,sha256hex:sha256hex,hashPin:hashPin,computeReport:computeReport,get deals(){return deals;},currentDeals:currentDeals,dealsFor:dealsFor};
+window.__mealTracker={get db(){return db;},get draft(){return draft;},get cloud(){return cloud;},get sync(){return sync;},syncNow:syncNow,pendingCount:pendingCount,get dev(){return dev;},checkAutoLock:checkAutoLock,preparePrint:preparePrint,freqScores:freqScores,computeSnapshot:computeSnapshot,sha256hex:sha256hex,hashPin:hashPin,computeReport:computeReport,get deals(){return deals;},currentDeals:currentDeals,dealsFor:dealsFor,flatten:flatten,unflatten:unflatten,rowToRec:rowToRec};
 })();
 </script>
 </body>
