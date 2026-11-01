@@ -255,6 +255,9 @@ table.daily tfoot th{border-bottom:0;border-top:2px solid var(--ink)}
 .big-total{font-size:2.2rem;font-weight:800;text-align:center;padding:4px 14px 0}
 .mc-by{color:var(--muted);font-size:.86rem;margin-top:6px}
 .print-only{display:none}
+#update-bar{position:fixed;left:10px;right:10px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:9999;background:#1f4e79;color:#fff;border-radius:14px;padding:12px 16px;display:flex;align-items:center;gap:12px;font-size:1.05rem;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.3)}#update-bar span{flex:1}
+table.irep{width:100%;border-collapse:collapse;font-size:1rem}table.irep th,table.irep td{padding:9px 8px;border-bottom:1px solid #e6e1d6;text-align:right;white-space:nowrap}table.irep th:nth-child(1),table.irep td:nth-child(1),table.irep th:nth-child(2),table.irep td:nth-child(2){text-align:left;white-space:normal}table.irep td:nth-child(1){font-weight:600}table.irep thead th{font-size:.85rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}table.irep tr.grp td{background:#f4efe4;font-weight:700;text-align:left}table.irep tfoot th{border-top:2px solid #999}table.irep .dr{color:var(--din)}table.irep .irc{display:none}@media screen and (max-width:600px){table.irep .c-cat{display:none}table.irep .irc{display:block;font-weight:400;font-size:.82rem;color:var(--muted)}table.irep th,table.irep td{padding:9px 6px}}table.irep .hm{color:var(--home)}
+@media print{table.irep{font-size:10pt}table.irep th,table.irep td{padding:3px 5px;border-bottom:1px solid #bbb}#update-bar{display:none!important}}
 .appfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:14px 4px 4px;color:var(--muted);font-size:.85rem}
 .appfoot .ver,.lock-ver{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
 .lock-ver{position:fixed;right:12px;bottom:calc(8px + var(--safe-b));opacity:.85}
@@ -439,7 +442,7 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 <div id="savebar" hidden></div>
 <nav class="tabs" aria-label="Sections"><div class="tabs-in">
   <button data-action="tab" data-v="log" class="on"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 3h6v3H9zM9 13l2 2 4-4"/></svg>Log</button>
-  <button data-action="tab" data-v="daily"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Daily</button>
+  <button data-action="tab" data-v="daily"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>Non-food</button>
   <button data-action="tab" data-v="history"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>History</button>
   <button data-action="tab" data-v="reports"><svg viewBox="0 0 24 24"><path d="M4 20h16M7 16v-5M12 16V6M17 16v-8"/></svg>Reports</button>
   <button data-action="tab" data-v="settings"><svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2.2"/><circle cx="10" cy="17" r="2.2"/></svg>Settings</button>
@@ -454,7 +457,7 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 'use strict';
 var KEY='mealTracker.v1', DRAFT_KEY='mealTracker.draft.v1';
 var MEALS=['Breakfast','Lunch','Dinner','Snack','Other'];
-var APP_VERSION='1.7.0';
+var APP_VERSION='1.8.0';
 var ALL='Both';
 var SRC={home:'Home',dining:'Dining Room'};
 var CHECK='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -528,12 +531,55 @@ function normalize(d){
 function normParts(a){return (Array.isArray(a)?a:[]).filter(function(x){return x&&x.itemId&&isFinite(+x.qty)&&+x.qty>0;}).map(function(x){return {itemId:String(x.itemId),qty:round2(+x.qty)};});}
 function normMeals(a){return (Array.isArray(a)?a:[]).filter(function(m){return MEALS.indexOf(m)>=0;});}
 function normCombo(c){return {id:String(c.id),name:String(c.name||'Combo'),meals:normMeals(c.meals),source:c.source==='home'||c.source==='dining'?c.source:'',parts:normParts(c.parts)};}
+
+/* v1.8.0 built-in default combos (same ids as v1.7.0-seed-combos.sql). Added once per device when the
+   household has no combos at all, after a clean sync (or on a device-only setup). */
+var DEF_ITEMS={
+ muffin:['mt17_english_muffin','English Muffin',['English Muffins'],[],['bread|bakery','grain|starch','breakfast']],
+ chsalad:['mt17_chicken_salad','Chicken Salad',[],['mt16_chicken_salad'],['deli','protein|meat']],
+ hmsalad:['mt17_ham_salad','Ham Salad',[],['mt16_ham_salad'],['deli','protein|meat']],
+ bread:['mt17_bread','Bread',['Market Pantry White Bread','White Bread','Sandwich Bread','Market Pantry Honey Wheat Bread','Honey Wheat Bread','Wheat Bread'],['mt16_white_bread'],['bread|bakery','grain|starch']],
+ turkey:['mt17_sliced_turkey','Sliced Turkey',['Deli Turkey','Turkey Lunch Meat','Turkey Slices','Turkey'],[],['deli','protein|meat']],
+ cheese:['mt17_sliced_cheese','Sliced Cheese',['Cheese Slices','Havarti','Havarti Cheese','Cheese'],[],['dairy']],
+ oatmeal:['mt17_oatmeal','Oatmeal',['Oatmeal Packets','Oatmeal Packet','Instant Oatmeal'],[],['grain|starch|cereal','breakfast']],
+ flakes:['mt17_frosted_flakes','Frosted Flakes',["Kellogg's Frosted Flakes",'Frosted Flakes Cereal'],[],['cereal','grain|starch','breakfast']],
+ waffle:['mt17_waffles','Waffles',['Hy-Vee Chocolate Chip Waffles','Chocolate Chip Waffles','Waffle','Frozen Waffles'],['mt16_hv_waffles'],['frozen','breakfast','grain|starch']],
+ banana:['mt17_banana','Banana',['Bananas'],[],['fruit','produce']],
+ milk:['mt17_milk','Milk',['2% Milk','Whole Milk'],[],['dairy','drink']],
+ cookies:['mt17_fudge_stripes','Fudge Stripe Cookies',['Fudge Stripes','Keebler Fudge Stripes','Fudge Stripe Cookie'],[],['snack|dessert|cookie','other']],
+ peaches:['mt17_sliced_peaches','Sliced Peaches',['Peaches','Canned Peaches','Peach Cups','Diced Peaches'],[],['fruit','produce']]};
+var DEFAULT_COMBOS=[
+ ['mt17_combo_muffin_halves','English Muffin Halves',['Lunch'],'',[['muffin',1],['chsalad',1],['hmsalad',1]]],
+ ['mt17_combo_salad_bread','Chicken & Ham Salad on Bread',['Lunch'],'',[['bread',2],['chsalad',1],['hmsalad',1]]],
+ ['mt17_combo_turkey_sandwich','Turkey & Cheese Sandwich',['Lunch'],'',[['bread',2],['turkey',3],['cheese',1]]],
+ ['mt17_combo_oatmeal_flakes','Oatmeal & Frosted Flakes',['Breakfast'],'home',[['oatmeal',2],['flakes',1]]],
+ ['mt17_combo_flakes_waffle','Frosted Flakes & Waffle',['Breakfast'],'home',[['flakes',1],['waffle',1]]],
+ ['mt17_combo_dining_breakfast','Dining Room Oatmeal, Banana & Milk',['Breakfast'],'dining',[['oatmeal',2],['banana',1],['milk',1]]],
+ ['mt17_combo_cookies_peaches','Cookies & Peaches',['Snack'],'',[['cookies',4],['peaches',1]]]];
+function defItemId(key){var d=DEF_ITEMS[key],ids=[d[0]].concat(d[3]),i,f;
+  for(i=0;i<ids.length;i++){f=findItem(ids[i]);if(f)return ids[i];}
+  var names=[d[1]].concat(d[2]).map(function(n){return n.trim().toLowerCase();});
+  for(i=0;i<names.length;i++){for(var c=0;c<db.categories.length;c++){var it=db.categories[c].items.find(function(x){return x.name.trim().toLowerCase()===names[i];});if(it)return it.id;}}
+  var food=db.categories.filter(function(c){return !c.household&&!/household/i.test(c.name);}),cat=null;
+  d[4].some(function(p){var re=new RegExp(p,'i');cat=food.find(function(c){return re.test(c.name);})||null;return !!cat;});
+  if(!cat)cat=food.find(function(c){return c.name.toLowerCase()==='other';})||food[food.length-1];
+  if(!cat){cat={id:uid(),name:'Other',items:[]};db.categories.push(cat);}
+  cat.items.push({id:d[0],name:d[1],cost:{home:null,dining:null},packSize:null,unit:''});reindex();return d[0];}
+function ensureDefaultCombos(force){
+  if(!force&&(dev.combosSeeded||(db.combos||[]).length))return false;
+  if(!force&&signedIn()&&(!cloud.lastSync||cloud.awaitingUpload))return false;
+  var have={};(db.combos||[]).forEach(function(c){have[c.name.trim().toLowerCase()]=1;have[c.id]=1;});
+  var n=0;db.combos=db.combos||[];
+  DEFAULT_COMBOS.forEach(function(d){if(have[d[0]]||have[d[1].toLowerCase()])return;
+    db.combos.push(normCombo({id:d[0],name:d[1],meals:d[2],source:d[3],parts:d[4].map(function(p){return {itemId:defItemId(p[0]),qty:p[1]};})}));n++;});
+  dev.combosSeeded=true;saveDev();if(n)save();return n;}
 function comboById(id){return (db.combos||[]).find(function(c){return c.id===id;})||null;}
 function comboFits(c,meal){return !c.meals.length||c.meals.indexOf(meal)>=0;}
 function comboPartsText(c){return c.parts.map(function(x){var f=findItem(x.itemId);return qtyNice(x.qty)+' '+(f?f.item.name:'(deleted item)');}).join(' + ');}
-function renderCombos(){if(ui.search.trim())return '';var L=(db.combos||[]).filter(function(c){return comboFits(c,draft.meal)&&c.parts.length;});if(!L.length)return '';
+function comboDbNote(){return signedIn()&&cloud.noCombos?'<div class="warn-box" id="combo-dbnote"><b class="ic">!</b><div><b>Combos are not in the online database yet.</b> The <code>combos</code> table is missing, so combos are saved on this device only. An admin should run <b>supabase-setup.sql</b> (then <b>v1.7.0-seed-combos.sql</b>) in Supabase › SQL Editor.</div></div>':'';}
+function renderCombos(){if(ui.search.trim())return '';var note=comboDbNote(),L=(db.combos||[]).filter(function(c){return comboFits(c,draft.meal)&&c.parts.length;});if(!L.length){if(!(db.combos||[]).length)return '<section class="card combos" id="combos-card"><h3 class="freq-h">🍽 Combos</h3>'+note+'<p class="muted" style="margin:4px 14px 12px">No combos saved yet.'+(isAdmin()?' <button class="link" data-action="combo-defaults">Add the 7 standard combos</button>':' Ask an admin to add them in Settings › Combos.')+'</p></section>';return note?'<section class="card combos" id="combos-card">'+note+'</section>':'';}
   var cnt=draft.combos||{};
-  return '<section class="card combos" id="combos-card"><h3 class="freq-h">🍽 Combos for '+esc(draft.meal==='Other'?'Other / household':draft.meal)+' <span class="muted">one tap adds every part</span></h3><div class="combo-list">'+L.map(function(c){var n=cnt[c.id]||0;
+  return '<section class="card combos" id="combos-card"><h3 class="freq-h">🍽 Combos for '+esc(draft.meal==='Other'?'Other / household':draft.meal)+' <span class="muted">one tap adds every part</span></h3>'+note+'<div class="combo-list">'+L.map(function(c){var n=cnt[c.id]||0;
     return '<div class="combo-row'+(n?' on':'')+'"><button class="combo-tile" data-action="combo-add" data-id="'+esc(c.id)+'" aria-label="Add combo '+esc(c.name)+'"><span class="check">'+(n?CHECK:'')+'</span><span class="cn-col"><span class="cn">'+esc(c.name)+(n>1?' <b class="fq">×'+n+'</b>':'')+'</span><span class="cp">'+esc(comboPartsText(c))+(c.source?' · '+SRC[c.source]:'')+'</span></span><span class="cplus">＋</span></button>'+(n?'<button class="iconbtn combo-minus" data-action="combo-remove" data-id="'+esc(c.id)+'" aria-label="Take one '+esc(c.name)+' back out">−</button>':'')+'</div>';}).join('')+'</div>'+(Object.keys(cnt).some(function(k){return cnt[k];})?'<p class="hint" style="margin:8px 2px 0">Each part is now checked below — change or uncheck any of them there.</p>':'')+'</section>';}
 function comboAdd(id,sign){var c=comboById(id);if(!c)return;draft.combos=draft.combos||{};var n=draft.combos[id]||0;if(sign<0&&!n)return;var miss=0;
   c.parts.forEach(function(x){var f=findItem(x.itemId);if(!f){miss++;return;}var k=x.itemId,l=draft.items[k];
@@ -549,7 +595,7 @@ function renderComboSection(){var L=db.combos||[],h='<h2 class="sec-title" id="c
   if(signedIn()&&cloud.noCombos)h+='<p class="hint" style="margin:10px 14px;color:#a33">The online database does not have combos yet, so combos stay on this device. Run the newest supabase-setup.sql (see SETUP.md).</p>';
   if(!L.length)h+='<p class="muted" style="margin:12px 14px">No combos yet. A combo logs several items with one tap, e.g. “English Muffin Halves”.</p>';
   L.forEach(function(c,i){h+='<div class="set-row combo-adm"><div class="grow"><div class="set-title">'+esc(c.name)+'</div><div class="muted" style="font-size:.88rem">'+(c.meals.length?c.meals.join(', '):'Every meal')+(c.source?' · '+SRC[c.source]:'')+'<br>'+esc(comboPartsText(c)||'No items yet')+'</div></div><button class="iconbtn" data-action="combo-up" data-id="'+esc(c.id)+'" aria-label="Move up"'+(i===0?' disabled':'')+'>↑</button><button class="btn" data-action="combo-edit" data-id="'+esc(c.id)+'">Edit</button></div>';});
-  h+='<div class="set-row"><button class="btn block" data-action="combo-new">+ Add a combo</button></div></section>';
+  h+='<div class="set-row"><button class="btn block" data-action="combo-new">+ Add a combo</button></div><div class="set-row"><button class="btn block" data-action="combo-defaults">Add any missing standard combos (7)</button></div></section>';
   return h;}
 function renderComboEditor(){var e=ui.comboEdit,h='<section class="card pad" id="combo-editor"><h2 style="margin-top:0">'+(e.isNew?'New combo':'Edit combo')+'</h2>';
   h+='<div class="lbl">Name</div><input type="text" id="ce-name" value="'+esc(e.name)+'" placeholder="e.g. English Muffin Halves" autocomplete="off">';
@@ -581,11 +627,12 @@ function reindex(){IDX=catalogIndex();}
 function findItem(id){return IDX[id]||null;}
 function catalogPrice(itemId,src){var f=findItem(itemId);var v=f?f.item.cost[src]:null;return isNum(v)?v:null;}
 function lineUnit(l){return isNum(l.unitCost)?l.unitCost:catalogPrice(l.itemId,l.source);}
+function costUnit(e){return e.source==='dining'?0:lineUnit(e);}
 function mealTotal(m){var t=0,priced=false;m.items.forEach(function(e){var u=lineUnit(e);if(u!=null){t+=u*e.qty;priced=true;}});return priced?t:null;}
 
 var db=load(); reindex();
 var draft=loadDraft();
-var ui={tab:'log',shopView:'list',dday:null,search:'',open:{},rview:'summary',cal:{view:'month',anchor:today(),sel:null},snapSort:'most',shopQ:'',histDays:21,setOpen:{},sum:{preset:'thisweek',from:null,to:null,person:'all',logger:'all',split:false}};
+var ui={tab:'log',shopView:'list',dday:null,search:'',open:{},rview:'items',cal:{view:'month',anchor:today(),sel:null},snapSort:'cat',shopQ:'',histDays:21,setOpen:{},sum:{preset:'thisweek',from:null,to:null,person:'all',logger:'all',split:false}};
 var restoredDraft=!draft.editingId&&Object.keys(draft.items).length>0;
 
 /* ---------- toast & modal ---------- */
@@ -879,7 +926,7 @@ function dayCard(k,d,costs,isToday){
   d.meals.forEach(function(m){h+='<div class="dc-meal"><span class="dc-mt">'+esc(mealLabel(m))+(m.person!==ALL||db.settings.people.length>1?' <small>'+esc(personLabel(m.person))+'</small>':'')+'</span><span class="dc-items">'+mealLines(m)+'</span></div>';});
   return h+tr+'</section>';}
 
-/* ---------- daily trackers (briefs, pads, inventory notes, requests) ---------- */
+/* ---------- non-food consumables, formerly "daily trackers" (briefs, pads, inventory notes, requests) ---------- */
 var INV_CHIPS=['Plenty','Half left','Last package opened','Out'];
 function defaultTrackers(){return [{id:'briefs',name:'Briefs',kind:'count',per:true},{id:'briefs_inv',name:'Briefs inventory',kind:'note',per:true},{id:'underpads',name:'Under pads',kind:'count',per:false}];}
 function trackers(){return db.settings.trackers||[];}
@@ -892,7 +939,7 @@ function initials(p){return p.split(/\s+/).map(function(w){return w.charAt(0).to
 function renderDaily(){var k=ui.dday||today(),d=dayRec(k),h='',T=trackers();
   h+='<section class="card pad"><div class="cal-nav"><button class="btn navb" data-action="dday-prev" aria-label="Previous day">‹</button><div class="cal-label" id="dday-label">'+esc(prettyDate(k,true))+'</div><button class="btn navb" data-action="dday-next" aria-label="Next day">›</button></div>';
   h+='<div class="range"><label><span>Date</span><input type="date" id="dday-date" value="'+k+'"></label></div>'+(k!==today()?'<div class="btn-row"><button class="btn" data-action="dday-today">Go to today</button></div>':'')+'</section>';
-  if(!T.length)h+='<div class="empty"><h2>No daily trackers</h2><p>'+(isAdmin()?'Add some in Settings › Daily trackers.':'Ask an admin to add some.')+'</p></div>';
+  if(!T.length)h+='<div class="empty"><h2>No non-food consumables</h2><p>'+(isAdmin()?'Add some in Settings › Non-food consumables.':'Ask an admin to add some.')+'</p></div>';
   T.forEach(function(t){
     h+='<h2 class="sec-title">'+esc(t.name)+'</h2><section class="card pad trk" data-trk="'+esc(t.id)+'">';
     if(t.per&&!db.settings.people.length)h+='<p class="muted">Add people in Settings first.</p>';
@@ -924,7 +971,7 @@ function computeDaily(from,to){var R={days:0,tr:[]},ds=db.days.filter(function(d
     R.tr.push({t:t,rows:rows});});
   return R;}
 function dailyReportHTML(S){var R=computeDaily(S.from,S.to);if(!R.tr.length)return '';
-  var h='<section class="card" id="rep-trk" data-days="'+R.days+'"><h3>Daily trackers</h3><div class="tbl-wrap"><table class="daily"><thead><tr><th>Tracker</th><th>Who</th><th>Total</th><th>Days logged</th><th>Avg / day</th></tr></thead><tbody>';
+  var h='<section class="card" id="rep-trk" data-days="'+R.days+'"><h3>Non-food consumables</h3><div class="tbl-wrap"><table class="daily"><thead><tr><th>Tracker</th><th>Who</th><th>Total</th><th>Days logged</th><th>Avg / day</th></tr></thead><tbody>';
   R.tr.forEach(function(x){x.rows.forEach(function(r){h+='<tr data-trk="'+esc(x.t.id)+'" data-who="'+esc(r.who)+'" data-total="'+r.total+'"><td>'+esc(x.t.name)+'</td><td>'+esc(r.who)+'</td><td><b>'+r.total+'</b></td><td>'+r.days+'</td><td>'+(r.days?round2(r.avg):'–')+'</td></tr>';});});
   return h+'</tbody></table></div><p class="hint" style="padding:0 14px 10px">Average is per day that has a count entered.</p></section>';}
 function dailyCSVRows(from,to){var T=trackers(),cols=[];T.forEach(function(t){trkKeys(t).forEach(function(o){cols.push({k:o.k,t:t,l:t.name+(o.p?' ('+o.p+')':'')});});});
@@ -932,7 +979,7 @@ function dailyCSVRows(from,to){var T=trackers(),cols=[];T.forEach(function(t){tr
   db.days.filter(function(d){return (!from||d.date>=from)&&(!to||d.date<=to)&&dayHasData(d);}).sort(function(a,b){return a.date<b.date?-1:1;}).forEach(function(d){
     rows.push([d.date].concat(cols.map(function(c){var v=c.t.kind==='count'?d.counts[c.k]:d.notes[c.k];return v==null?'':v;}),[d.requests||'',d.note||'',d.byName||'']));});
   return rows;}
-function renderTrackerSettings(){var h='<h2 class="sec-title">Daily trackers</h2><section class="card">';
+function renderTrackerSettings(){var h='<h2 class="sec-title">Non-food consumables</h2><section class="card">';
   trackers().forEach(function(t,i){h+='<div class="set-row" data-trk-id="'+esc(t.id)+'"><div style="flex:1"><b>'+esc(t.name)+'</b><div class="muted" style="font-size:.85rem">'+(t.kind==='count'?'Count (+/−)':'Note (text)')+' · '+(t.per?'each person':'whole household')+'</div></div>'+
     '<button class="iconbtn" data-action="trk-up" data-i="'+i+'" aria-label="Move up"'+(i?'':' disabled')+'>↑</button><button class="btn" data-action="trk-rename" data-id="'+esc(t.id)+'">Rename</button><button class="iconbtn danger" data-action="trk-del" data-id="'+esc(t.id)+'" aria-label="Remove">×</button></div>';});
   h+='<div class="pad"><button class="btn" data-action="trk-add">+ Add a tracker</button><p class="hint">For example “Instant coffee” (count) or “Pads inventory” (note). Removing a tracker hides it but keeps its old numbers.</p></div></section>';
@@ -952,13 +999,13 @@ var dailyActions={
       db.flags.push({id:uid(),itemId:'req:'+uid(),name:s,category:'Request',note:'Requested '+shortDate(d.date),by:u?u.id:null,byName:u?u.name:null,at:Date.now()});n++;});
     save();render();toast(n?'Added to the shopping list':'Already on the shopping list');},
   'trk-add':function(){if(!isAdmin())return toast('Only an admin can do that');var t={};
-    askText('New daily tracker','','e.g. Instant coffee').then(function(n){if(!n)return null;t.name=n;return choose('What do you record?',[['count','A count (+/−)'],['note','A short note']]);})
+    askText('New non-food item','','e.g. Instant coffee').then(function(n){if(!n)return null;t.name=n;return choose('What do you record?',[['count','A count (+/−)'],['note','A short note']]);})
     .then(function(k){if(!k)return null;t.kind=k;return choose('For whom?',[['per','Each person'],['one','Whole household']]);})
     .then(function(p){if(!p)return;t.per=p==='per';t.id='t'+uid().slice(0,8);db.settings.trackers=trackers().concat([t]);save();render();toast('Tracker added');});},
   'trk-rename':function(el){if(!isAdmin())return toast('Only an admin can do that');var t=trackers().filter(function(x){return x.id===el.dataset.id;})[0];if(!t)return;
     askText('Rename tracker',t.name).then(function(n){if(!n)return;db.settings.trackers=trackers().map(function(x){return x.id===t.id?Object.assign({},x,{name:n}):x;});save();render();toast('Saved');});},
   'trk-del':function(el){if(!isAdmin())return toast('Only an admin can do that');var t=trackers().filter(function(x){return x.id===el.dataset.id;})[0];if(!t)return;
-    confirmBox('Remove “'+t.name+'”?','It disappears from the Daily screen. Numbers already entered are kept.','Remove',true).then(function(ok){if(!ok)return;db.settings.trackers=trackers().filter(function(x){return x.id!==t.id;});save();render();});},
+    confirmBox('Remove “'+t.name+'”?','It disappears from the Non-food screen. Numbers already entered are kept.','Remove',true).then(function(ok){if(!ok)return;db.settings.trackers=trackers().filter(function(x){return x.id!==t.id;});save();render();});},
   'trk-up':function(el){if(!isAdmin())return;var i=+el.dataset.i,a=trackers().slice();if(i<1)return;var x=a[i];a[i]=a[i-1];a[i-1]=x;db.settings.trackers=a;save();render();}
 };
 function recDay(d){return {id:d.id,date:d.date,counts:d.counts||{},notes:d.notes||{},requests:d.requests||'',day_note:d.note||'',updated_by_name:strOrNull(d.byName),edited_by:strOrNull(d.by),edited_ms:isNum(d.at)?d.at:null};}
@@ -1024,12 +1071,12 @@ function unitIsSingle(u){return !u||/^(units?|each|ea|pcs?|pieces?|servings?|ite
 function mealMs(m){return parseYmd(m.date).getTime();}
 function usedSince(itemId,r){var rd=ymd(new Date(r.at)),q=0;
   db.meals.forEach(function(m){if(m.date<rd)return;if(m.date===rd&&(m.createdAt||0)<r.at)return;
-    m.items.forEach(function(e){if(e.itemId===itemId)q+=e.qty;});});return q;}
+    m.items.forEach(function(e){if(e.itemId===itemId&&e.source!=='dining')q+=e.qty;});});return q;}
 function avgUse(itemId){var first=null,t=today();
-  db.meals.forEach(function(m){if(m.items.some(function(e){return e.itemId===itemId;})&&(!first||m.date<first))first=m.date;});
+  db.meals.forEach(function(m){if(m.items.some(function(e){return e.itemId===itemId&&e.source!=='dining';})&&(!first||m.date<first))first=m.date;});
   if(!first)return {avg:0,days:0};
   var since=Math.round((parseYmd(t)-parseYmd(first))/864e5)+1,span=Math.min(28,Math.max(7,since)),from=addDays(t,-(span-1)),q=0;
-  db.meals.forEach(function(m){if(m.date<from||m.date>t)return;m.items.forEach(function(e){if(e.itemId===itemId)q+=e.qty;});});
+  db.meals.forEach(function(m){if(m.date<from||m.date>t)return;m.items.forEach(function(e){if(e.itemId===itemId&&e.source!=='dining')q+=e.qty;});});
   return {avg:q/span,days:span};}
 function estimate(itemId){var x=findItem(itemId),r=lastRestock(itemId);if(!x||!r||!isNum(r.qty)||r.qty<=0)return null;
   var per=unitIsSingle(r.unit)?1:(isNum(x.item.packSize)&&x.item.packSize>0?x.item.packSize:null);
@@ -1121,36 +1168,44 @@ function computeSnapshot(S){var M={},catOrder={};db.categories.forEach(function(
   mealsIn(S.from,S.to,S.person,S.logger).forEach(function(m){var seen={};
     m.items.forEach(function(e){var k=lineKey(e),r=M[k];if(!r)r=M[k]={key:k,name:lineName(e),cat:catOfLine(e),qty:0,times:0,home:0,dining:0,last:'',cost:0,unpriced:0};
       r.qty+=e.qty;r[e.source]+=e.qty;if(!seen[k]){r.times++;seen[k]=1;}if(m.date>r.last)r.last=m.date;
-      var u=lineUnit(e);if(u==null)r.unpriced++;else r.cost+=u*e.qty;});});
+      var u=costUnit(e);if(u==null)r.unpriced++;else r.cost+=u*e.qty;});});
   var rows=Object.keys(M).map(function(k){return M[k];}),groups={},names=[];
   rows.forEach(function(r){if(!groups[r.cat]){groups[r.cat]=[];names.push(r.cat);}groups[r.cat].push(r);});
   names.sort(function(a,b){return ((catOrder[a]==null?999:catOrder[a])-(catOrder[b]==null?999:catOrder[b]))||a.localeCompare(b);});
   var srt=ui.snapSort==='az'?function(a,b){return a.name.localeCompare(b.name);}:function(a,b){return b.qty-a.qty||b.times-a.times||a.name.localeCompare(b.name);};
   names.forEach(function(n){groups[n].sort(srt);});
   return {rows:rows,groups:groups,cats:names};}
-function renderSnapshot(S){var costs=db.settings.showCosts,P=computeSnapshot(S),h='';
-  var tq=0,tc=0;P.rows.forEach(function(r){tq+=r.qty;tc+=r.cost;});
-  h+='<div class="print-only print-head"><h1>Items consumed</h1><p><b>'+esc(rangeLabel(S.from,S.to))+'</b> · Who ate: '+esc(S.person==='all'?'All':S.person)+' · Logged by: '+esc(loggerFilterLabel(S.logger))+' · Printed '+esc(new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}))+'</p></div>';
-  h+='<div class="no-print">'+seg('snap-sort',[{v:'most',l:'Most used first'},{v:'az',l:'A–Z'}],ui.snapSort==='az'?'az':'most')+'</div>';
-  h+='<div class="btn-row no-print" style="margin:12px 0 14px"><button class="btn" data-action="snap-print">Print / Save as PDF</button><button class="btn" data-action="snap-csv">Download list CSV</button></div>';
+/* v1.8.0 reports registry: add more report types here later. */
+var REPORTS={items:{name:'Item Consumption & Restock Report',file:'Item-Consumption-Restock-Report'}};
+function itemRows(P,mode){var rows=P.rows.slice(),az=function(a,b){return a.name.localeCompare(b.name);};
+  if(mode==='az')return rows.sort(az);
+  if(mode==='most')return rows.sort(function(a,b){return b.qty-a.qty||az(a,b);});
+  if(mode==='home')return rows.sort(function(a,b){return b.home-a.home||az(a,b);});
+  var out=[];P.cats.forEach(function(c){out=out.concat(P.groups[c].slice().sort(az));});return out;}
+function itemTableHTML(P,costs,mode){if(!P.rows.length)return '<p class="muted" style="margin:10px 14px">Nothing logged in this period.</p>';
+  var th=0,td=0,tc=0,cur=null,cols=costs?6:5,h='<div class="tbl-wrap"><table class="irep" id="irep"><thead><tr><th>Item</th><th class="c-cat">Category</th><th class="hm">Home</th><th class="dr">DR</th><th>Total</th>'+(costs?'<th>Home cost</th>':'')+'</tr></thead><tbody>';
+  itemRows(P,mode).forEach(function(r){th+=r.home;td+=r.dining;tc+=r.cost;
+    if(mode==='cat'&&r.cat!==cur){cur=r.cat;var g=P.groups[cur],gh=0,gd=0;g.forEach(function(x){gh+=x.home;gd+=x.dining;});h+='<tr class="grp"><td colspan="'+cols+'">'+esc(cur)+' <span class="muted">· Home '+fmtQty(round2(gh))+' · DR '+fmtQty(round2(gd))+'</span></td></tr>';}
+    h+='<tr class="snap-row" data-name="'+esc(r.name)+'" data-cat="'+esc(r.cat)+'" data-qty="'+round2(r.qty)+'" data-home="'+round2(r.home)+'" data-dining="'+round2(r.dining)+'" data-times="'+r.times+'" data-last="'+r.last+'" data-cost="'+(costs?r.cost.toFixed(2):'')+'"><td>'+esc(r.name)+(mode!=='cat'?'<small class="irc">'+esc(r.cat)+'</small>':'')+'</td><td class="c-cat">'+esc(r.cat)+'</td><td class="hm">'+(r.home?fmtQty(round2(r.home)):'–')+'</td><td class="dr">'+(r.dining?fmtQty(round2(r.dining)):'–')+'</td><td><b>'+fmtQty(round2(r.qty))+'</b></td>'+(costs?'<td>'+(r.home?(r.cost||!r.unpriced?money(r.cost)+(r.unpriced?'*':''):'no price'):'–')+'</td>':'')+'</tr>';});
+  h+='</tbody><tfoot><tr><th>Total <small class="irc">'+P.rows.length+' items</small></th><th class="c-cat">'+P.rows.length+' items</th><th class="hm">'+fmtQty(round2(th))+'</th><th class="dr">'+fmtQty(round2(td))+'</th><th>'+fmtQty(round2(th+td))+'</th>'+(costs?'<th>'+money(tc)+'</th>':'')+'</tr></tfoot></table></div>';
+  return h;}
+function renderSnapshot(S){var costs=db.settings.showCosts,P=computeSnapshot(S),mode=['cat','most','home','az'].indexOf(ui.snapSort)>=0?ui.snapSort:'cat',h='';
+  var tq=0,tc=0,un=0;P.rows.forEach(function(r){tq+=r.qty;tc+=r.cost;if(r.unpriced&&r.home)un++;});
+  h+='<div class="print-only print-head"><h1>'+esc(REPORTS.items.name)+'</h1><p><b>'+esc(rangeLabel(S.from,S.to))+'</b> · Who ate: '+esc(S.person==='all'?'All':S.person)+' · Logged by: '+esc(loggerFilterLabel(S.logger))+' · Printed '+esc(new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}))+'</p></div>';
+  h+='<div class="no-print"><div class="lbl">Sort</div>'+seg('snap-sort',[{v:'cat',l:'By category'},{v:'most',l:'Most eaten'},{v:'home',l:'Most from Home'},{v:'az',l:'A–Z'}],mode,'grid2')+'</div>';
+  h+='<div class="btn-row no-print" style="margin:12px 0 14px"><button class="btn" data-action="snap-print">Print / Save as PDF</button><button class="btn primary" data-action="snap-csv">Download report (CSV)</button></div>';
   h+='<div id="snap" data-from="'+S.from+'" data-to="'+S.to+'" data-items="'+P.rows.length+'" data-qty="'+round2(tq)+'" data-cost="'+(costs?tc.toFixed(2):'')+'">';
-  h+='<p class="muted no-print" style="margin:0 4px 10px;font-weight:600">'+esc(rangeLabel(S.from,S.to))+' · '+P.rows.length+' different item'+(P.rows.length===1?'':'s')+'</p>';
-  if(!P.rows.length)return h+'<div class="empty"><h2>Nothing logged in this period</h2><p>Try a different period or filter.</p></div></div>';
-  P.cats.forEach(function(cn){var g=P.groups[cn],cq=0;g.forEach(function(r){cq+=r.qty;});
-    h+='<section class="card snap-cat"><h3>'+esc(cn)+' <span class="muted">'+fmtQty(round2(cq))+'</span></h3>';
-    h+=g.map(function(r){return '<div class="snap-row" data-name="'+esc(r.name)+'" data-qty="'+round2(r.qty)+'" data-times="'+r.times+'" data-home="'+round2(r.home)+'" data-dining="'+round2(r.dining)+'" data-last="'+r.last+'" data-cost="'+(costs?r.cost.toFixed(2):'')+'">'+
-      '<div class="sn-top"><span class="sn-name">'+esc(r.name)+'</span><span class="sn-q">'+fmtQty(round2(r.qty))+'</span></div>'+
-      '<div class="sn-meta">'+r.times+' time'+(r.times===1?'':'s')+(r.home?' · <span class="ci h"><i></i>Home '+fmtQty(round2(r.home))+'</span>':'')+(r.dining?' · <span class="ci d"><i></i>Dining '+fmtQty(round2(r.dining))+'</span>':'')+' · last '+esc(shortDate(r.last))+(costs?' · <b>'+money(r.cost)+'</b>'+(r.unpriced?' <small>(some unpriced)</small>':''):'')+'</div></div>';}).join('');
-    h+='</section>';});
-  h+='<table class="snap-table print-only"><thead><tr><th>Item</th><th>Category</th><th>Total qty</th><th>Times</th><th>Home</th><th>Dining</th><th>Last eaten</th>'+(costs?'<th>Cost</th>':'')+'</tr></thead><tbody>';
-  P.cats.forEach(function(cn){P.groups[cn].forEach(function(r){h+='<tr><td>'+esc(r.name)+'</td><td>'+esc(cn)+'</td><td>'+fmtQty(round2(r.qty))+'</td><td>'+r.times+'</td><td>'+fmtQty(round2(r.home))+'</td><td>'+fmtQty(round2(r.dining))+'</td><td>'+esc(shortDate(r.last))+'</td>'+(costs?'<td>'+money(r.cost)+'</td>':'')+'</tr>';});});
-  h+='</tbody><tfoot><tr><th>Total</th><th></th><th>'+fmtQty(round2(tq))+'</th><th></th><th></th><th></th><th></th>'+(costs?'<th>'+money(tc)+'</th>':'')+'</tr></tfoot></table>';
+  h+='<section class="card"><h3>'+esc(REPORTS.items.name)+'</h3><p class="muted" style="margin:0 14px 8px;font-weight:600">'+esc(rangeLabel(S.from,S.to))+' · '+P.rows.length+' different item'+(P.rows.length===1?'':'s')+'</p>';
+  h+=itemTableHTML(P,costs,mode);
+  h+='<p class="hint" style="padding:6px 14px 12px">DR = Dining Room. Dining Room food is included in rent, so it has no cost and is not counted for restocking. <b>Home</b> is what was used from their own supplies'+(costs?'; Home cost = Home qty × Home price'+(un?' (* some entries have no price)':''):'')+'.</p></section>';
   return h+'</div>';}
-function snapCSV(){var S=ui.sum,costs=db.settings.showCosts,P=computeSnapshot(S),out=[];
-  out.push(['Items consumed',S.from+' to '+S.to,'Who ate: '+(S.person==='all'?'All':S.person),'Logged by: '+loggerFilterLabel(S.logger)]);
-  out.push(['Category','Item','Total qty','Times eaten','Home qty','Dining Room qty','Last eaten'].concat(costs?['Cost']:[]));
-  P.cats.forEach(function(cn){P.groups[cn].forEach(function(r){out.push([cn,r.name,round2(r.qty),r.times,round2(r.home),round2(r.dining),r.last].concat(costs?[r.cost.toFixed(2)]:[]));});});
-  download('items-consumed-'+S.from+'_to_'+S.to+'.csv',out.map(function(r){return r.map(csvCell).join(',');}).join('\r\n'),'text/csv');}
+function snapCSV(){var S=ui.sum,costs=db.settings.showCosts,P=computeSnapshot(S),mode=['cat','most','home','az'].indexOf(ui.snapSort)>=0?ui.snapSort:'cat',out=[],th=0,td=0,tc=0;
+  out.push([REPORTS.items.name]);out.push(['Period',S.from+' to '+S.to]);out.push(['Who ate',S.person==='all'?'All':S.person]);out.push(['Logged by',loggerFilterLabel(S.logger)]);out.push(['Created',new Date().toLocaleString()]);out.push([]);
+  out.push(['Item','Category','Home qty','DR qty','Total qty'].concat(costs?['Home cost']:[]));
+  itemRows(P,mode).forEach(function(r){th+=r.home;td+=r.dining;tc+=r.cost;out.push([r.name,r.cat,round2(r.home),round2(r.dining),round2(r.qty)].concat(costs?[r.cost.toFixed(2)]:[]));});
+  out.push(['Total',P.rows.length+' items',round2(th),round2(td),round2(th+td)].concat(costs?[tc.toFixed(2)]:[]));
+  out.push([]);out.push(['DR = Dining Room (included in rent'+(costs?': no cost':'')+', not restocked). Home qty is what to restock.']);
+  download(REPORTS.items.file+'_'+S.from+'_to_'+S.to+'.csv','\ufeff'+out.map(function(r){return r.map(csvCell).join(',');}).join('\r\n'),'text/csv;charset=utf-8');toast('Report downloaded');}
 
 var v14Actions={
   'toggle-low':function(el){var id=el.dataset.id,on=!flagFor(id);setLow(id,on);var x=findItem(id);
@@ -1172,13 +1227,15 @@ var v14Actions={
   'cal-print':function(){doPrint('cal');},
   'cal-print-list':function(){doPrint('daylist');},
   'snap-sort':function(el){ui.snapSort=el.dataset.v;render();},
+  'combo-defaults':function(){var n=ensureDefaultCombos(true);toast(n?'Added '+n+' standard combo'+(n===1?'':'s'):'All standard combos are already there');render();},
+  'app-reload':function(){var w=window.__swReg&&window.__swReg.waiting;if(w)w.postMessage('skipWaiting');setTimeout(function(){location.reload();},w?400:0);},
   'snap-print':function(){doPrint('');},
   'snap-csv':snapCSV,
   'set-itemsort':function(el){if(!needAdmin())return;db.settings.itemSort=el.dataset.v;save();render();}
 };
 
 /* ---------- render ---------- */
-var TITLES={log:'Log a meal',daily:'Daily log',history:'History',reports:'Reports',settings:'Settings',shop:'Shopping list'};
+var TITLES={log:'Log a meal',daily:'Non-food consumables',history:'History',reports:'Reports',settings:'Settings',shop:'Shopping list'};
 function render(){
   reindex();
   document.querySelectorAll('.tabs button').forEach(function(b){b.classList.toggle('on',b.dataset.v===ui.tab);});
@@ -1369,7 +1426,7 @@ function computeReport(S){
     d.meals++;R.mealType[m.meal]=(R.mealType[m.meal]||0)+1;R.mealTypeCost[m.meal]=R.mealTypeCost[m.meal]||0;
     var lg=loggerName(m);R.logger[lg]=(R.logger[lg]||0)+1;
     R.person[m.person]=R.person[m.person]||0;R.personCost[m.person]=R.personCost[m.person]||0;
-    m.items.forEach(function(e){var q=e.qty,u=lineUnit(e),lc=u==null?0:u*q,cn=e.category||'Other';
+    m.items.forEach(function(e){var q=e.qty,u=costUnit(e),lc=u==null?0:u*q,cn=e.category||'Other';
       R.servings+=q;d.servings+=q;d[e.source+'Q']+=q;R.src[e.source]+=q;
       R.cat[cn]=(R.cat[cn]||0)+q;R.catCost[cn]=(R.catCost[cn]||0)+lc;
       R.person[m.person]+=q;R.personCost[m.person]+=lc;R.mealTypeCost[m.meal]+=lc;
@@ -1388,7 +1445,7 @@ function personRows(R,split){
   return rows.filter(function(r){return r.q||r.c;});}
 function barLine(name,frac,main,small,cls){return '<div class="bar-row"><span class="bn">'+esc(name)+'</span><span class="bar"><i class="'+(cls||'')+'" style="width:'+Math.max(0,Math.min(100,Math.round(frac*100)))+'%"></i></span><span class="bv">'+main+(small?'<small>'+small+'</small>':'')+'</span></div>';}
 function renderReports(){
-  var h='<div class="no-print">'+seg('rview',[{v:'summary',l:'Summary'},{v:'calendar',l:'Calendar'},{v:'items',l:'Items list'}],ui.rview,'rview')+'</div>';
+  var h='<div class="no-print">'+seg('rview',[{v:'items',l:'Item report'},{v:'summary',l:'Summary'},{v:'calendar',l:'Calendar'}],ui.rview,'rview')+'</div>';
   if(ui.rview==='calendar')return h+renderCalendar();
   return h+renderSummary();}
 function renderSummary(){
@@ -1407,13 +1464,13 @@ function renderSummary(){
   var R=computeReport(S);
   var filt='Who ate: '+(S.person==='all'?'All':S.person)+' · Logged by: '+loggerFilterLabel(S.logger);
   h+='<div class="print-only print-head"><h1>Meal report</h1><p><b>'+esc(rangeLabel(S.from,S.to))+'</b> · '+esc(filt)+' · Printed '+esc(new Date().toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}))+'</p></div>';
-  h+='<div class="btn-row no-print" style="margin:0 0 14px"><button class="btn" data-action="report-print">Print / Save as PDF</button><button class="btn" data-action="report-csv">Download report CSV</button></div>';
+  h+='<div class="btn-row no-print" style="margin:0 0 14px"><button class="btn" data-action="report-print">Print / Save as PDF</button></div>';
   h+='<div id="rep" data-from="'+S.from+'" data-to="'+S.to+'" data-meals="'+R.count+'" data-servings="'+round2(R.servings)+'" data-total="'+(costs?R.total.toFixed(2):'')+'" data-home="'+(costs?R.srcCost.home.toFixed(2):'')+'" data-dining="'+(costs?R.srcCost.dining.toFixed(2):'')+'" data-unpriced="'+(costs?R.unpriced:'')+'">';
   h+='<p class="muted no-print" style="margin:0 4px 10px;font-weight:600">'+esc(rangeLabel(S.from,S.to))+'</p>';
   if(!R.count)return h+'<div class="empty"><h2>No meals logged in this period</h2><p>Try a different period or filter.</p></div>'+hhReportHTML(R)+dailyReportHTML(S)+'</div>';
   h+='<div class="stats"><div class="stat"><div class="v">'+R.count+'</div><div class="k">Meals</div></div><div class="stat"><div class="v">'+R.daysLogged+'<span style="font-size:.9rem;color:var(--muted)">/'+R.nDays+'</span></div><div class="k">Days logged</div></div><div class="stat"><div class="v">'+fmtQty(R.servings)+'</div><div class="k">Servings</div></div></div>';
   if(costs){
-    h+='<section class="card" id="rep-cost"><h3>Total cost</h3><div class="big-total" id="rep-total">'+money(R.total)+'</div><div class="money-grid"><div><div class="v" style="color:var(--home)">'+money(R.srcCost.home)+'</div><div class="k">Home</div></div><div><div class="v" style="color:var(--din)">'+money(R.srcCost.dining)+'</div><div class="k">Dining Room</div></div><div><div class="v">'+money(R.total/Math.max(1,R.daysLogged))+'</div><div class="k">Per logged day</div></div></div>';
+    h+='<section class="card" id="rep-cost"><h3>Total cost</h3><div class="big-total" id="rep-total">'+money(R.total)+'</div><div class="money-grid"><div><div class="v" style="color:var(--home)">'+money(R.srcCost.home)+'</div><div class="k">Home</div></div><div><div class="v" style="color:var(--din)">'+money(R.srcCost.dining)+'</div><div class="k">Dining Room (in rent)</div></div><div><div class="v">'+money(R.total/Math.max(1,R.daysLogged))+'</div><div class="k">Per logged day</div></div></div>';
     if(R.unpriced){var un=Object.keys(R.unpricedNames);h+='<div class="warn-box"><b class="ic">!</b><div><b>'+R.unpriced+' item entr'+(R.unpriced===1?'y has':'ies have')+' no price</b>, so the totals may be understated. Missing: '+esc(un.slice(0,8).join(', '))+(un.length>8?' and '+(un.length-8)+' more':'')+'.'+(admin?' Add prices in Settings › Items &amp; categories.':'')+'</div></div>';}
     h+='</section>';}
   var sm=Math.max(costs?Math.max(R.srcCost.home,R.srcCost.dining):Math.max(R.src.home,R.src.dining),1e-9);
@@ -1435,8 +1492,7 @@ function renderSummary(){
   var names=Object.keys(R.items);
   if(costs){var byCost=names.filter(function(k){return R.items[k].cost>0;}).sort(function(a,b){return R.items[b].cost-R.items[a].cost;}).slice(0,10),tc=byCost.length?R.items[byCost[0]].cost:1;
     h+='<section class="card" id="rep-topcost"><h3>Top items by cost</h3><div class="bars">'+(byCost.length?byCost.map(function(k){var it=R.items[k];return barLine(k,it.cost/tc,money(it.cost),fmtQty(it.q)+' servings');}).join(''):'<p class="muted">No priced items in this period.</p>')+'</div></section>';}
-  var top=names.slice().sort(function(a,b){return R.items[b].q-R.items[a].q;}).slice(0,10),tm=top.length?R.items[top[0]].q:1;
-  h+='<section class="card"><h3>Most eaten</h3><div class="bars">'+top.map(function(k){var it=R.items[k];return barLine(k,it.q/tm,fmtQty(it.q),(it.home?'Home '+fmtQty(it.home):'')+(it.home&&it.dining?' · ':'')+(it.dining?'Dining '+fmtQty(it.dining):''));}).join('')+'</div></section>';
+  h+='<section class="card" id="rep-items"><h3>Every item eaten <span class="muted">Home vs Dining Room (DR)</span></h3>'+itemTableHTML(computeSnapshot(S),costs,'cat')+'<p class="hint" style="padding:0 14px 10px">Full list with sorting and export: <button class="link no-print" data-action="rview" data-v="items">Item report</button></p></section>';
   var lg=Object.keys(R.logger).sort(function(a,b){return R.logger[b]-R.logger[a];}),lm=lg.length?R.logger[lg[0]]:1;
   h+=hhReportHTML(R);
   h+=dailyReportHTML(S);
@@ -1465,7 +1521,7 @@ function reportCSV(){
   rows.push(['Date','Meal','Who ate','Logged by','Category','Item','Qty','Source'].concat(costs?['Unit cost','Line cost']:[]));
   R.lines.forEach(function(l){rows.push([l.m.date,l.m.meal,personLabel(l.m.person),loggerName(l.m),l.e.category,l.e.name,fmtQty(l.e.qty),SRC[l.e.source]].concat(costs?[l.u==null?'':c2(l.u),l.lc==null?'':c2(l.lc)]:[]));});
   var HN=Object.keys(R.hh);if(HN.length){rows.push([]);rows.push(['Household usage (not in food servings)']);rows.push(['Item','Used','Times','Avg per day']);HN.forEach(function(n){var x=R.hh[n];rows.push([n,fmtQty(round2(x.q)),x.t,round2(x.q/R.nDays)]);});}
-  var DR=computeDaily(S.from,S.to);if(DR.tr.length){rows.push([]);rows.push(['Daily tracker totals']);rows.push(['Tracker','Who','Total','Days logged','Avg per day']);DR.tr.forEach(function(x){x.rows.forEach(function(r){rows.push([x.t.name,r.who,r.total,r.days,r.days?round2(r.avg):'']);});});}
+  var DR=computeDaily(S.from,S.to);if(DR.tr.length){rows.push([]);rows.push(['Non-food consumables totals']);rows.push(['Tracker','Who','Total','Days logged','Avg per day']);DR.tr.forEach(function(x){x.rows.forEach(function(r){rows.push([x.t.name,r.who,r.total,r.days,r.days?round2(r.avg):'']);});});}
   var dl=dailyCSVRows(S.from,S.to);if(dl.length>1){rows.push([]);rows.push(['Daily log']);rows=rows.concat(dl);}
   download('meal-report-'+S.from+'_to_'+S.to+'.csv','\ufeff'+rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n'),'text/csv;charset=utf-8');
   toast('Report downloaded');}
@@ -1496,12 +1552,12 @@ function renderSettings(){
     h+='<h2 class="sec-title">Shopping list &amp; stock</h2><section class="card">';
     h+='<div class="set-row"><div class="grow"><div class="set-title">Auto-flag Low when about '+db.settings.autoLowDays+' day'+(db.settings.autoLowDays===1?'':'s')+' are left</div><div class="muted" style="font-size:.88rem">Uses the run-out estimate (after a restock with a quantity). Someone still has to clear it.</div></div><button class="switch'+(db.settings.autoLow?' on':'')+'" role="switch" aria-checked="'+db.settings.autoLow+'" aria-label="Auto-flag Low" data-action="toggle-autolow" id="autolow-switch"><span></span></button></div>';
     h+='<div class="set-row"><button class="btn" data-action="set-autolow-days">Change number of days</button></div></section>';
-    h+='<h2 class="sec-title">Daily tab</h2><section class="card"><div class="set-row"><div class="grow"><div class="set-title">Show Daily tab</div><div class="muted" style="font-size:.88rem">Briefs/pads counts, inventory notes, requests. Off by default: household items on the Log screen cover most of this. Anything already entered stays in the calendar and reports.</div></div><button class="switch'+(db.settings.showDaily?' on':'')+'" role="switch" aria-checked="'+db.settings.showDaily+'" aria-label="Show Daily tab" data-action="toggle-daily" id="daily-switch"><span></span></button></div></section>';
+    h+='<h2 class="sec-title">Non-food tab</h2><section class="card"><div class="set-row"><div class="grow"><div class="set-title">Show Non-food tab</div><div class="muted" style="font-size:.88rem">Briefs/pads counts, inventory notes, requests. Off by default: household items on the Log screen cover most of this. Anything already entered stays in the calendar and reports.</div></div><button class="switch'+(db.settings.showDaily?' on':'')+'" role="switch" aria-checked="'+db.settings.showDaily+'" aria-label="Show Non-food tab" data-action="toggle-daily" id="daily-switch"><span></span></button></div></section>';
     if(db.settings.showDaily)h+=renderTrackerSettings();}
   h+='<h2 class="sec-title">Who ate (choices on the Log screen)</h2><section class="card">';
   s.people.forEach(function(p,i){h+='<div class="set-row"><input type="text" value="'+esc(p)+'" data-change="rename-person" data-i="'+i+'" aria-label="Name"><button class="iconbtn danger" data-action="del-person" data-i="'+i+'" aria-label="Remove '+esc(p)+'">×</button></div>';});
   h+='<div class="set-row"><button class="btn block" data-action="add-person">+ Add a person</button></div></section>';
-  h+='<p class="hint" style="margin:-6px 4px 0">“'+esc(personLabel(ALL))+'” is always available when logging. These names are also used for per-person daily trackers (e.g. Bill and Mary Lou) — tap a name to rename it.</p>';
+  h+='<p class="hint" style="margin:-6px 4px 0">“'+esc(personLabel(ALL))+'” is always available when logging. These names are also used for per-person non-food consumables (e.g. Bill and Mary Lou) — tap a name to rename it.</p>';
   h+='<h2 class="sec-title">Week starts on</h2><section class="card pad">'+seg('set-weekstart',[{v:'0',l:'Sunday'},{v:'1',l:'Monday'}],String(s.weekStart||0))+'</section>';
 
   h+='<h2 class="sec-title">Item order on the Log screen</h2><section class="card pad">'+seg('set-itemsort',[{v:'frequent',l:'Most used first'},{v:'az',l:'A–Z'},{v:'manual',l:'As listed'}],db.settings.itemSort||'frequent')+'<p class="hint">“Most used first” puts the items logged most in the last 3 months at the top of each category (recent use counts more).</p></section>';
@@ -1774,7 +1830,7 @@ function doSync(){
       return fetchDeals(hh).then(function(dc){return ch||dc;},function(e){console.warn('deals not loaded',e);return ch;});});
   }).then(function(r){
     if(r==='awaiting'){setSync('awaiting');}
-    else{cloud.lastSync=Date.now();saveCloud();setSync(pendingCount()?'offline':'ok');}
+    else{cloud.lastSync=Date.now();saveCloud();if(ensureDefaultCombos())render();setSync(pendingCount()?'offline':'ok');}
     if(linked==='loaded'||r===true)softRender();
     if(linked)afterLink(linked);
   }).catch(function(e){
@@ -2130,10 +2186,19 @@ if(dev.rememberCats&&dev.catOpen)ui.open=dev.catOpen;
   fetch('manifest.webmanifest',{cache:'no-store'}).then(function(r){
     if(!r.ok||/html/i.test(r.headers.get('content-type')||''))return;
     var l=document.createElement('link');l.rel='manifest';l.href='manifest.webmanifest';document.head.appendChild(l);
-    if('serviceWorker' in navigator&&window.isSecureContext)navigator.serviceWorker.register('sw.js').catch(function(){});
+    if('serviceWorker' in navigator&&window.isSecureContext)(function(){var sw=navigator.serviceWorker,had=!!sw.controller,shown=false;
+      function bar(){if(shown||!had)return;shown=true;var d=document.createElement('div');d.id='update-bar';d.className='no-print';
+        d.innerHTML='<span>A new version of the app is ready.</span><button class="btn primary" id="update-reload">Reload now</button>';document.body.appendChild(d);
+        d.querySelector('button').onclick=function(e){e.stopPropagation();var w=window.__swReg&&window.__swReg.waiting;if(w)w.postMessage('skipWaiting');setTimeout(function(){location.reload();},w?400:0);};}
+      sw.register('sw.js').then(function(reg){window.__swReg=reg;if(reg.waiting)bar();
+        reg.addEventListener('updatefound',function(){var w=reg.installing;if(w)w.addEventListener('statechange',function(){if(w.state==='installed'||w.state==='activated')bar();});});
+        document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')reg.update().catch(function(){});});
+        setInterval(function(){reg.update().catch(function(){});},30*60000);}).catch(function(){});
+      sw.addEventListener('controllerchange',bar);})();
   }).catch(function(){});
 })();
 checkAutoLock();
+if(!signedIn())ensureDefaultCombos();
 render();setTimeout(function(){if(!lockNeeded())autoFlag();},400);
 if(signedIn())syncNow();
 if(restoredDraft)setTimeout(function(){toast('Restored your unsaved meal');},300);
