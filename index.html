@@ -426,7 +426,7 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 .deal-when{font-weight:800;color:#8a1c4a}
 .deal-meta{font-size:.85rem;color:var(--muted)}
 .deal-price{font-weight:700}.deal-price s{color:var(--muted);font-weight:500;margin-left:4px}
-.deal-row a{flex:none;font-weight:700;color:var(--pri);padding:4px 0}
+.deal-row a{flex:none;font-weight:700;color:var(--pri);padding:4px 0}.deal-links{display:flex;align-items:center;gap:6px;flex:none}.hv-i{border:1px solid var(--line);background:#fff;border-radius:999px;width:34px;height:34px;font-size:1.1rem;color:var(--pri);cursor:pointer}.hv-note{margin:0 0 8px;font-size:.9rem;background:#eef4fb;border-radius:10px;padding:8px 10px;color:#1f3b57}
 .hh-tag{display:inline-block;font-size:.72rem;font-weight:700;color:#7a5a00;background:#fbf3dc;border-radius:999px;padding:2px 8px;margin-left:6px}
 .tag.hh{background:#fbf3dc;color:#7a5a00}
 .ci.hh i,.ml.hh i{background:#b08900}
@@ -457,7 +457,7 @@ textarea{width:100%;font:inherit;font-size:1rem;border:1.5px solid var(--line);b
 'use strict';
 var KEY='mealTracker.v1', DRAFT_KEY='mealTracker.draft.v1';
 var MEALS=['Breakfast','Lunch','Dinner','Snack','Other'];
-var APP_VERSION='1.8.0';
+var APP_VERSION='1.8.1';
 var ALL='Both';
 var SRC={home:'Home',dining:'Dining Room'};
 var CHECK='<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -833,7 +833,19 @@ function sortedItems(c,sc){var mode=db.settings.itemSort||'frequent',a=c.items.s
   if(mode==='az')a.sort(byName);
   else if(mode==='frequent'){sc=sc||logFreq();a.sort(function(x,y){return (sc[y.id]||0)-(sc[x.id]||0)||byName(x,y);});}
   return a;}
-function frequentItems(n,sc){sc=sc||logFreq();var all=[];
+/* v1.8.1: the Frequent row only shows items that fit the chosen meal: logged for that meal, part of a
+   combo for that meal, or (when the meal has little history) never-logged items from fitting categories. */
+var MEAL_CATS={Breakfast:/breakfast|cereal|grain|starch|bread|bakery|dairy|fruit|drink|beverage/i,Lunch:/deli|lunch|protein|meat|bread|soup|vegetable|fruit|drink|beverage/i,
+  Dinner:/dinner|protein|meat|vegetable|frozen|grain|starch|soup/i,Snack:/snack|dessert|cookie|sweet|fruit|drink|beverage/i};
+function strictFreq(meal){var sc=freqScores(meal),out={},logged={},n=freqScores.lastN||0;
+  if(!meal||!MEALS||MEALS.indexOf(meal)<0||meal==='Other')return sc;
+  db.meals.forEach(function(m){m.items.forEach(function(e){if(e.itemId)logged[e.itemId]=1;});});
+  Object.keys(sc).forEach(function(id){if(sc[id]>=1000)out[id]=sc[id];});
+  (db.combos||[]).forEach(function(c){if(c.meals.length&&comboFits(c,meal))c.parts.forEach(function(x){if(!out[x.itemId]&&findItem(x.itemId))out[x.itemId]=500;});});
+  var re=MEAL_CATS[meal];
+  if(re&&n<FREQ_MIN_MEALS)db.categories.forEach(function(c){if(c.household||!re.test(c.name))return;c.items.forEach(function(i){if(!out[i.id]&&!logged[i.id])out[i.id]=1;});});
+  return out;}
+function frequentItems(n,sc){sc=sc||strictFreq(draft.meal);var all=[];
   db.categories.forEach(function(c){c.items.forEach(function(i){if(sc[i.id]>0)all.push(i);});});
   all.sort(function(x,y){return (sc[y.id]||0)-(sc[x.id]||0)||byName(x,y);});return all.slice(0,n||10);}
 function renderFrequent(){if(ui.search.trim())return '';var top=frequentItems(10);if(!top.length)return '';
@@ -1211,7 +1223,8 @@ var v14Actions={
   'toggle-low':function(el){var id=el.dataset.id,on=!flagFor(id);setLow(id,on);var x=findItem(id);
     toast(on?(x?x.item.name:'Item')+' added to the shopping list':'Removed from the shopping list');
     if(ui.tab==='shop'){var sp=$('#shop-pick');render();}else if(ui.tab==='log')refreshLogParts();else render();},
-  'open-shop':function(){ui.tab='shop';render();window.scrollTo(0,0);},
+  'open-shop':function(){ui.tab='shop';render();window.scrollTo(0,0);var dc=$('#deals-card');if(dc&&!flagCounts().n){dc.scrollIntoView({block:'start'});window.scrollBy(0,-90);}},
+  'hv-info':function(){modal({title:'Hy-Vee store',message:HV_NOTE.replace(/<[^>]+>/g,'')});},
   'restock':function(el){var f=db.flags.filter(function(x){return x.id===el.dataset.id;})[0];if(!f)return;
     db.flags=db.flags.filter(function(x){return x.id!==f.id;});save();render();toast(f.name+' restocked ✓');},
   'flag-note':function(el){var f=db.flags.filter(function(x){return x.id===el.dataset.id;})[0];if(!f)return;
@@ -1618,13 +1631,15 @@ function dealPrice(d){if(!dealPricesOK())return '';
   var p=d.sale_price!=null?'$'+Number(d.sale_price).toFixed(2):'',r=d.regular_price!=null&&+d.regular_price>+d.sale_price?'<s>$'+Number(d.regular_price).toFixed(2)+'</s>':'';
   var txt=[d.price_text,d.deal_text].filter(Boolean).join(' · ');
   return (p||txt)?'<div class="deal-price">'+(p?esc(p):'')+r+(txt?(p?' · ':'')+esc(txt):'')+'</div>':'';}
+var HV_NOTE='First time you open a Hy-Vee link, Hy-Vee may show the Urbandale, IA store. Set the store once to <b>5330 NW 64th St, Kansas City</b>; Hy-Vee remembers it after that.';
+function isHV(d){return /hy-?vee/i.test((d.retailer||'')+' '+(d.url||''));}
 function renderDealsCard(){var L=currentDeals();if(!L.length)return '';var t=today();
-  var h='<section class="card pad no-print" id="deals-card"><h2>🏷 Deals <span class="muted">('+L.length+')</span></h2>';
+  var h='<section class="card pad no-print" id="deals-card"><h2>🏷 Deals <span class="muted">('+L.length+')</span></h2>'+(L.some(isHV)?'<p class="hv-note" id="hv-note">ⓘ '+HV_NOTE+'</p>':'');
   L.forEach(function(d){var it=d.food_id&&findItem(d.food_id),soon=!dealStarted(d,t);
     h+='<div class="deal-row" data-id="'+esc(d.id)+'"><div class="grow"><div class="deal-name">'+esc(d.item_name||d.food_name)+'</div>'+
       '<div class="deal-when">'+(soon?'Starts ':'')+esc(dealRange(d))+'</div>'+dealPrice(d)+
       '<div class="deal-meta">'+esc(d.retailer)+(d.store_name?' · '+esc(d.store_name):'')+(it?' · for <b>'+esc(it.item.name)+'</b>':'')+'</div></div>'+
-      (/^https:\/\//.test(d.url||'')?'<a href="'+esc(d.url)+'" target="_blank" rel="noopener">Open</a>':'')+'</div>';});
+      (/^https:\/\//.test(d.url||'')?'<div class="deal-links"><a href="'+esc(d.url)+'" target="_blank" rel="noopener">Open</a>'+(isHV(d)?'<button class="hv-i" data-action="hv-info" aria-label="About the Hy-Vee store">ⓘ</button>':'')+'</div>':'')+'</div>';});
   var at=deals.rows.reduce(function(m,d){var x=Date.parse(d.scanned_at||0)||0;return x>m?x:m;},0);
   return h+(at?'<p class="hint" style="margin:6px 0 0">Checked '+esc(timeStr(at,true))+'. Prices can differ by store; Hy-Vee Perks prices need a Perks card.</p>':'')+'</section>';}
 function fetchDeals(hh){
